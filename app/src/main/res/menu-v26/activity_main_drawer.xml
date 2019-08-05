@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item android:title="Transportation List">
+        <menu>
+            <group>
+                <item
+                    android:id="@+id/nav_bus"
+                    android:icon="@drawable/ic_menu_bus"
+                    android:title="@string/menu_bus"/>
+                <item
+                    android:id="@+id/nav_coach"
+                    android:icon="@drawable/ic_menu_coach"
+                    android:title="@string/menu_coach" />
+                <item
+                    android:id="@+id/nav_train"
+                    android:icon="@drawable/ic_menu_train"
+                    android:title="@string/menu_train" />
+            </group>
+        </menu>
+    </item>
+    <item android:title="Timetable">
+        <menu>
+            <item
+                android:id="@+id/info"
+                android:icon="@drawable/ic_menu_info"
+                android:title="@string/menu_info" />
+        </menu>
+    </item>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_tools"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="@string/menu_tools" />
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/menu_share" />
+            <item
+                android:id="@+id/contributors"
+                android:icon="@drawable/ic_menu_contributors"
+                android:title="@string/menu_contributors"/>
+        </menu>
+    </item>
+
+
+</menu>
