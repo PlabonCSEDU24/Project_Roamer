@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,11 +30,16 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 public class MainActivity extends AppCompatActivity
@@ -44,6 +51,8 @@ public class MainActivity extends AppCompatActivity
     Location lastLocation;
     LocationRequest locationRequest;
     private FusedLocationProviderClient fusedLocationClient;
+    private FloatingActionButton myLocationButton;
+
 
 
     @Override
@@ -53,6 +62,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setBackgroundColor(Color.TRANSPARENT);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -60,13 +70,19 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
-        bottomSheet=(LinearLayout)findViewById(R.id.bottom_sheet);
-        bottomSheetBehavior=BottomSheetBehavior.from(bottomSheet);
-        
+        //status bar transparent
+        Window window = this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.setStatusBarColor(Color.TRANSPARENT);
+
+        //bottom sheet
+
         //map api things
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        myLocationButton = (FloatingActionButton) findViewById(R.id.imgMyLocation);
     }
 
 
@@ -138,25 +154,35 @@ public class MainActivity extends AppCompatActivity
             if (!success) {
                 Log.e("MainActivity", "style parsing failed");
             }
-        }catch(Resources.NotFoundException e){
-            Log.e("MainActivity","Can't find style. Error: ",e);
+        } catch (Resources.NotFoundException e) {
+            Log.e("MainActivity", "Can't find style. Error: ", e);
         }
         locationRequest = new LocationRequest();
         locationRequest.setInterval(1000);
         locationRequest.setFastestInterval(1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 map.setMyLocationEnabled(true);
-            }else{
+
+            } else {
                 checkLocationPermission();
             }
         }
 
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-        LatLng doyelChattar = new LatLng(23.728014,90.400323);
+        LatLng doyelChattar = new LatLng(23.728014, 90.400323);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(doyelChattar, 11));
+        map.getUiSettings().setMyLocationButtonEnabled(false);
+        myLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LatLng latLng = new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+                map.animateCamera(cameraUpdate);
+            }
+        });
     }
     LocationCallback locationCallback = new LocationCallback(){
         @Override
