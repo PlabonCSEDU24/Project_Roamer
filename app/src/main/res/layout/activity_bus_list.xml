@@ -6,15 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".BusListActivity"
     android:background="@color/colorAccent"
-    android:gravity="center">
+    android:padding="16dp">
 
     <TextView
+        android:id="@+id/busList"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:text="BUS LIST"
-        android:textSize="32sp">
+        android:textSize="20sp"/>
 
-    </TextView>
+
 
 
 </RelativeLayout>

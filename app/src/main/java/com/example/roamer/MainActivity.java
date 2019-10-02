@@ -26,12 +26,25 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.mancj.materialsearchbar.MaterialSearchBar;
+
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -42,16 +55,30 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
     boolean flag=false;
-    LinearLayout bottomSheet;
+    //LinearLayout bottomSheet;
     BottomSheetBehavior bottomSheetBehavior;
     private GoogleMap map;
     Location lastLocation;
     LocationRequest locationRequest;
     private FusedLocationProviderClient fusedLocationClient;
     private FloatingActionButton myLocationButton;
+    private PlacesClient placesClient;
+    private List<AutocompletePrediction> predictionList;
+
+
+    private MaterialSearchBar searchBar;
 
 
 
@@ -75,16 +102,113 @@ public class MainActivity extends AppCompatActivity
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(Color.TRANSPARENT);
+        //search view
 
         //bottom sheet
+        //bottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
+        //bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        //bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
-        //map api things
+        //ship previously saved database with application
+        String appDataPath = this.getApplicationInfo().dataDir;
+        File dbFolder = new File(appDataPath + "/databases");//Make sure the /databases folder exists
+        dbFolder.mkdir();//This can be called multiple times.
+
+        File dbFilePath = new File(appDataPath + "/databases/BusDatabase.sqlite");
+
+        try {
+            InputStream inputStream = this.getAssets().open("BusDatabase.sqlite");
+            OutputStream outputStream = new FileOutputStream(dbFilePath);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer))>0)
+            {
+                outputStream.write(buffer, 0, length);
+            }
+            outputStream.flush();
+            outputStream.close();
+            inputStream.close();
+        } catch (IOException e){
+            Toast.makeText(this,"copy hoy nai",Toast.LENGTH_SHORT).show();
+        }
+
+
+
+
+    //map api things
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         myLocationButton = (FloatingActionButton) findViewById(R.id.imgMyLocation);
-    }
 
+        Places.initialize(this, "AIzaSyAYyzU_ZlHLTWS38tGj6ZvQx6q-Qrq8T3w");
+        searchBar = (MaterialSearchBar) findViewById(R.id.searchBar1);
+        placesClient = Places.createClient(this);
+        final AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
+        searchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
+            @Override
+            public void onSearchStateChanged(boolean enabled) {
+
+            }
+
+            @Override
+            public void onSearchConfirmed(CharSequence text) {
+                startSearch(text.toString(), true, null, true);
+            }
+
+            @Override
+            public void onButtonClicked(int buttonCode) {
+                if (buttonCode == MaterialSearchBar.BUTTON_BACK) {
+                    searchBar.disableSearch();
+                }
+            }
+        });
+        searchBar.addTextChangeListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                final FindAutocompletePredictionsRequest predictionsRequest = FindAutocompletePredictionsRequest.builder()
+                        .setCountry("bd")
+                        .setTypeFilter(TypeFilter.ADDRESS)
+                        .setSessionToken(token)
+                        .setQuery(charSequence.toString())
+                        .build();
+                placesClient.findAutocompletePredictions(predictionsRequest).addOnCompleteListener(new OnCompleteListener<FindAutocompletePredictionsResponse>() {
+                    @Override
+                    public void onComplete(@NonNull Task<FindAutocompletePredictionsResponse> task) {
+                        if (task.isSuccessful()) {
+                            FindAutocompletePredictionsResponse predictionsResponse = task.getResult();
+                            if (predictionsResponse != null) {
+                                predictionList = predictionsResponse.getAutocompletePredictions();
+                                List<String> suggestionList = new ArrayList<>();
+                                for (int i = 0; i < predictionList.size(); i++) {
+                                    AutocompletePrediction prediction = predictionList.get(i);
+                                    suggestionList.add(prediction.getFullText(null).toString());
+                                }
+                                searchBar.updateLastSuggestions(suggestionList);
+                                if (!searchBar.isSuggestionsVisible())
+                                    searchBar.showSuggestionsList();
+
+                            }
+                        } else {
+                            Log.i("mytag", "prediction fetching task unsuccessfull");
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+
+    }
 
     @Override
     public void onBackPressed() {
