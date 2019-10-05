@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CoachListActivity"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/cardview_light_background">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100sp"
+        android:gravity="center"
+        >
+
+        <TextView
+            android:id="@+id/busNameByRoadId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bus Name"
+            android:gravity="center"
+            android:textSize="32sp" >
+        </TextView>
+
+    </LinearLayout>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/stoppageList"
+        android:dividerHeight="2dp"
+        android:divider="#ff22"
+
+
+
+        >
+
+    </ListView>
+
+
+
+
+</LinearLayout>

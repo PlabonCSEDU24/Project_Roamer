@@ -4,9 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 public class BusListActivity extends AppCompatActivity {
@@ -27,10 +29,20 @@ public class BusListActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter=new Adapter(this,cursor);
         recyclerView.setAdapter(adapter);
+        adapter.setOnItemClickListener(new Adapter.clickListener(){
+
+            @Override
+            public void onItemClick(int position, View view) {
+                createNewActivity();
+            }
+        });
 
     }
 
-
+    void createNewActivity(){
+        Intent intent=new Intent(this,RoadListByBus.class);
+        startActivity(intent);
+    }
     public void createDatabase(){
         busList =new busList(this);
         sqLiteDatabase=busList.getWritableDatabase();

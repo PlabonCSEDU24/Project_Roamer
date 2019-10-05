@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
+    private static clickListener clickListener;
     private Context mContext;
     private Cursor mCursor;
     private LayoutInflater mInflater;
@@ -34,7 +35,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         if(!mCursor.moveToPosition(position)){
             return;
         }
-        String name=mCursor.getString(0);
+        String name=mCursor.getString(1);
         holder.busName.setText(name);
     }
 
@@ -53,11 +54,23 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         }
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView busName;
         public ViewHolder(View itemView) {
             super(itemView);
             busName=itemView.findViewById(R.id.textItem);
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            clickListener.onItemClick(getLayoutPosition(),v);
+        }
+    }
+    public interface clickListener{
+        void onItemClick(int position,View view);
+    }
+    public void setOnItemClickListener(clickListener clickListener){
+        Adapter.clickListener=clickListener;
     }
 }
