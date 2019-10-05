@@ -102,7 +102,7 @@ public class busList extends SQLiteOpenHelper {
     }
     public Cursor displayData(){
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
-        Cursor cursor= sqLiteDatabase.rawQuery("select * from "+tableName1,null);
+        Cursor cursor= sqLiteDatabase.rawQuery("select * from "+tableName1 ,null);
         return cursor;
     }
 }

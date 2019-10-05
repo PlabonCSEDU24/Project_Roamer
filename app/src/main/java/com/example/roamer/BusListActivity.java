@@ -1,6 +1,8 @@
 package com.example.roamer;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,18 +14,19 @@ public class BusListActivity extends AppCompatActivity {
     Cursor cursor;
     busList busList;
     TextView textView;
+    RecyclerView recyclerView;
+    Adapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bus_list);
         createDatabase();
-        textView=(TextView)findViewById(R.id.busList);
+        textView=(TextView)findViewById(R.id.textItem);
         cursor=busList.displayData();
-        StringBuffer stringBuffer=new StringBuffer();
-        while (cursor.moveToNext()){
-            stringBuffer.append(cursor.getString(0)+"-> "+cursor.getString(1)+"\n");
-        }
-        textView.setText(stringBuffer.toString());
+        recyclerView=(RecyclerView)findViewById(R.id.busListRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter=new Adapter(this,cursor);
+        recyclerView.setAdapter(adapter);
 
     }
 

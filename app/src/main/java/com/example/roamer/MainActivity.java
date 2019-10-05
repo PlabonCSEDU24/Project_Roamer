@@ -102,14 +102,13 @@ public class MainActivity extends AppCompatActivity
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(Color.TRANSPARENT);
-        //search view
-
         //bottom sheet
         //bottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
         //bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         //bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
         //ship previously saved database with application
+
         String appDataPath = this.getApplicationInfo().dataDir;
         File dbFolder = new File(appDataPath + "/databases");//Make sure the /databases folder exists
         dbFolder.mkdir();//This can be called multiple times.
@@ -122,9 +121,9 @@ public class MainActivity extends AppCompatActivity
             byte[] buffer = new byte[1024];
             int length;
             while ((length = inputStream.read(buffer))>0)
-            {
+             {
                 outputStream.write(buffer, 0, length);
-            }
+             }
             outputStream.flush();
             outputStream.close();
             inputStream.close();

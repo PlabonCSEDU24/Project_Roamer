@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BusListActivity"
-    android:background="@color/colorAccent"
-    android:padding="16dp">
+    tools:context=".BusListActivity">
 
-    <TextView
-        android:id="@+id/busList"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="BUS LIST"
-        android:textSize="20sp"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginRight="4dp"
+            android:layout_marginLeft="4dp"
+            android:scrollbarStyle="outsideInset"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:id="@+id/busListRecyclerView"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:scrollbars="vertical"
+            android:scrollbarSize="8dp"
+            android:scrollbarThumbVertical="@color/colorPrimaryDark"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:scrollbarTrackVertical="@color/colorAccent"
 
+            />
 
-
-
-</RelativeLayout>
+    </LinearLayout>
