@@ -34,7 +34,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         if(!mCursor.moveToPosition(position)){
             return;
         }
-        String name=mCursor.getString(1);
+        String name=mCursor.getString(0);
         holder.busName.setText(name);
     }
 
