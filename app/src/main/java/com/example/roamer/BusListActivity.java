@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -50,8 +51,10 @@ public class BusListActivity extends AppCompatActivity {
                 if(firstStoppage==0){
                     stoppageList.add(roadCursor.getString(1));
                     firstStoppage=1;
+                    Toast.makeText(this, roadCursor.getString(1), Toast.LENGTH_SHORT).show();
                 }
                 stoppageList.add(roadCursor.getString(2));
+                Toast.makeText(this, roadCursor.getString(2), Toast.LENGTH_SHORT).show();
             }
             else if(Integer.parseInt(roadCursor.getString(0))>roadId)
                 break;
@@ -59,6 +62,7 @@ public class BusListActivity extends AppCompatActivity {
     }
     void createNewActivity(){
         Intent intent=new Intent(this,RoadListByBus.class);
+        intent.putExtra("ara",stoppageList);
         startActivity(intent);
     }
     public void createDatabase(){
