@@ -11,12 +11,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+
 public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     private static clickListener clickListener;
     private Context mContext;
     private Cursor mCursor;
     private LayoutInflater mInflater;
     private AdapterView.OnItemClickListener onItemClickListener;
+    Bus bus;
+    ArrayList<Bus> busArrayList=new ArrayList<>();
 
     public Adapter(Context context,Cursor cursor){
         mContext=context;
@@ -35,10 +39,10 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         if(!mCursor.moveToPosition(position)){
             return;
         }
-        String name=mCursor.getString(1);
-        holder.busName.setText(name);
+        bus=new Bus(Integer.parseInt(mCursor.getString(0)),mCursor.getString(1),Integer.parseInt(mCursor.getString(2)));
+        busArrayList.add(bus);
+        holder.busName.setText(bus.getBusName());
     }
-
     @Override
     public int getItemCount() {
 
@@ -64,11 +68,12 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
         @Override
         public void onClick(View v) {
-            clickListener.onItemClick(getLayoutPosition(),v);
+
+            clickListener.onItemClick(getLayoutPosition(),v,busArrayList.get(getAdapterPosition()).getRoadId());
         }
     }
     public interface clickListener{
-        void onItemClick(int position,View view);
+        void onItemClick(int position,View view,int roadId);
     }
     public void setOnItemClickListener(clickListener clickListener){
         Adapter.clickListener=clickListener;

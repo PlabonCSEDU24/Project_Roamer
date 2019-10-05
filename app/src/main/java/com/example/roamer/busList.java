@@ -72,9 +72,14 @@ public class busList extends SQLiteOpenHelper {
             Toast.makeText(context, "upFailed", Toast.LENGTH_SHORT).show();
         }
     }
-    public Cursor displayData(){
+    public Cursor displayBusData(){
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
         Cursor cursor= sqLiteDatabase.rawQuery("select * from "+tableName1 ,null);
+        return cursor;
+    }
+    public Cursor displayRoadData(){
+        SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
+        Cursor cursor= sqLiteDatabase.rawQuery("select * from "+tableName2 ,null);
         return cursor;
     }
 }
