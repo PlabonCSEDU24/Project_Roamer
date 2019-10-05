@@ -69,11 +69,11 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         @Override
         public void onClick(View v) {
 
-            clickListener.onItemClick(getLayoutPosition(),v,busArrayList.get(getAdapterPosition()).getRoadId());
+            clickListener.onItemClick(getLayoutPosition(),v,busArrayList.get(getAdapterPosition()).getRoadId(),busArrayList.get(getAdapterPosition()).getBusName());
         }
     }
     public interface clickListener{
-        void onItemClick(int position,View view,int roadId);
+        void onItemClick(int position,View view,int roadId,String busName);
     }
     public void setOnItemClickListener(clickListener clickListener){
         Adapter.clickListener=clickListener;

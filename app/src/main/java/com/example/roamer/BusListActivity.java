@@ -36,33 +36,33 @@ public class BusListActivity extends AppCompatActivity {
         adapter.setOnItemClickListener(new Adapter.clickListener(){
 
             @Override
-            public void onItemClick(int position, View view,int roadId) {
+            public void onItemClick(int position, View view,int roadId,String busName) {
                 getStoppageData(roadId);
-                createNewActivity();
+                createNewActivity(busName);
             }
         });
 
     }
     void getStoppageData(int roadId){
         roadCursor=busList.displayRoadData();
+        stoppageList.clear();
         int firstStoppage=0;
         while(roadCursor.moveToNext()){
             if(Integer.parseInt(roadCursor.getString(0))==roadId){
                 if(firstStoppage==0){
                     stoppageList.add(roadCursor.getString(1));
                     firstStoppage=1;
-                    Toast.makeText(this, roadCursor.getString(1), Toast.LENGTH_SHORT).show();
                 }
                 stoppageList.add(roadCursor.getString(2));
-                Toast.makeText(this, roadCursor.getString(2), Toast.LENGTH_SHORT).show();
             }
             else if(Integer.parseInt(roadCursor.getString(0))>roadId)
                 break;
         }
     }
-    void createNewActivity(){
+    void createNewActivity(String busName){
         Intent intent=new Intent(this,RoadListByBus.class);
         intent.putExtra("ara",stoppageList);
+        intent.putExtra("busName",busName);
         startActivity(intent);
     }
     public void createDatabase(){

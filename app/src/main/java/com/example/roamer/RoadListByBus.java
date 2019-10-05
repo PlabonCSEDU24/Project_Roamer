@@ -16,6 +16,7 @@ public class RoadListByBus extends AppCompatActivity {
     ListView listView;
 
     ArrayList<String> stoppageArra;
+    String busName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,8 +26,9 @@ public class RoadListByBus extends AppCompatActivity {
         Bundle bundle=getIntent().getExtras();
         if(bundle!=null){
             stoppageArra=bundle.getStringArrayList("ara");
+            busName=bundle.getString("busName");
         }
-        textView.setText("Rezaul Karim");
+        textView.setText(busName);
         ArrayAdapter<String> stoppageArrayList=new ArrayAdapter<>(this,R.layout.stoppage_list,R.id.stoppageTextId,stoppageArra);
         listView.setAdapter(stoppageArrayList);
     }

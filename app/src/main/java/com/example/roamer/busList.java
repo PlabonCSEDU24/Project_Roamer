@@ -20,7 +20,7 @@ public class busList extends SQLiteOpenHelper {
     private static final String busID="Bus_ID";
     private static final String busName="Bus_Name";
     private static final String roadID="RoadID";
-    private static final String createBusTable="create table "+tableName1+"( "+busName+" varchar(100) primary key, "+roadID+" INTEGER, foreign key(RoadID) REFERENCES BusRoads(RoadID));";
+    private static final String createBusTable="create table "+tableName1+"( "+busID+"INTEGER primary key autoincrement, "+busName+" varchar(100) primary key, "+roadID+" INTEGER, foreign key(RoadID) REFERENCES BusRoads(RoadID));";
     private static final String createRoadTable="create table "+tableName2+"( "+roadID+" INTEGER primary key autoincrement, " +
             "Stoppage1 varchar(100)," +
             "Stoppage2 varchar(100));";
