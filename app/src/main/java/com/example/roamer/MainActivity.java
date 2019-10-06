@@ -5,7 +5,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -29,6 +32,7 @@ import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -52,8 +56,11 @@ import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -74,11 +81,10 @@ public class MainActivity extends AppCompatActivity
     LocationRequest locationRequest;
     private FusedLocationProviderClient fusedLocationClient;
     private FloatingActionButton myLocationButton;
+    private EditText searchbar1,searchbar2;
     private PlacesClient placesClient;
     private List<AutocompletePrediction> predictionList;
 
-
-    private MaterialSearchBar searchBar;
 
 
 
@@ -102,10 +108,6 @@ public class MainActivity extends AppCompatActivity
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(Color.TRANSPARENT);
-        //bottom sheet
-        //bottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
-        //bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        //bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
         //ship previously saved database with application
 
@@ -120,27 +122,28 @@ public class MainActivity extends AppCompatActivity
             OutputStream outputStream = new FileOutputStream(dbFilePath);
             byte[] buffer = new byte[1024];
             int length;
-            while ((length = inputStream.read(buffer))>0)
-             {
+            while ((length = inputStream.read(buffer)) > 0) {
                 outputStream.write(buffer, 0, length);
-             }
+            }
             outputStream.flush();
             outputStream.close();
             inputStream.close();
-        } catch (IOException e){
-            Toast.makeText(this,"copy hoy nai",Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(this, "copy hoy nai", Toast.LENGTH_SHORT).show();
         }
 
 
-
-
-    //map api things
+        //map api things
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         myLocationButton = (FloatingActionButton) findViewById(R.id.imgMyLocation);
 
-        Places.initialize(this, "AIzaSyAYyzU_ZlHLTWS38tGj6ZvQx6q-Qrq8T3w");
+        //search
+       // searchbar1=(EditText)findViewById(R.id.search_bar_1);
+       // searchbar2=(EditText)findViewById(R.id.search_bar_2);
+
+      /*  Places.initialize(this, "AIzaSyAYyzU_ZlHLTWS38tGj6ZvQx6q-Qrq8T3w");
         searchBar = (MaterialSearchBar) findViewById(R.id.searchBar1);
         placesClient = Places.createClient(this);
         final AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
@@ -167,6 +170,8 @@ public class MainActivity extends AppCompatActivity
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
+
+
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -205,7 +210,7 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-
+        */
 
     }
 
@@ -306,6 +311,7 @@ public class MainActivity extends AppCompatActivity
                 map.animateCamera(cameraUpdate);
             }
         });
+        //initSearch();
     }
     LocationCallback locationCallback = new LocationCallback(){
         @Override
@@ -361,6 +367,26 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-}
 
+
+
+    /*private void geolocate(){
+        String searchString=searchbar2.getText().toString();
+        Geocoder geocoder=new Geocoder(MainActivity.this);
+        List<Address> list=new ArrayList<>();
+        try{
+            list=geocoder.getFromLocationName(searchString,1);
+        }
+        catch (IOException e){
+        }
+        if(list.size()>0){
+            Address address=list.get(0);
+            LatLng latLng = new LatLng(address.getLatitude(),address.getLongitude());
+            map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            map.animateCamera(CameraUpdateFactory.zoomTo(15));
+        }
+
+    }
+    */
+}
 

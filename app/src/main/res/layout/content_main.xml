@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,27 +9,79 @@
     tools:showIn="@layout/app_bar_main"
     android:orientation="vertical">
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/bannerLayout"
+        android:layout_height="216dp"
+        android:layout_width="match_parent"
+        app:cardElevation="10dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:background="@color/colorPrimary"
+            android:elevation="10dp">
 
+            <LinearLayout
+                android:layout_width="35dp"
+                android:layout_height="86dp"
+                android:layout_marginTop="100dp"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="86dp"
+                android:layout_marginTop="100dp"
+                android:layout_marginRight="35dp">
+                    <RelativeLayout
+                        android:id="@+id/uppperSearchBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="38dp"
+                        android:background="@drawable/white_border"
+                        android:elevation="10dp">
+                        <com.mancj.materialsearchbar.MaterialSearchBar
+                            android:id="@+id/search_bar_1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_centerVertical="true"
+                            android:textSize="16sp"
+                            android:textColor="#000"
+                            app:mt_placeholder="source"
+                            app:mt_searchIconDrawable="@drawable/ic_my_location"
+                            android:fontFamily="@font/roboto_medium"
+                            android:padding="3dp"
+                            />
+
+                    </RelativeLayout>
+                    <RelativeLayout
+                        android:layout_below="@+id/uppperSearchBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="38dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/white_border"
+                        android:elevation="10dp">
+
+                        <com.mancj.materialsearchbar.MaterialSearchBar
+                            android:id="@+id/search_bar_2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_centerVertical="true"
+                            android:textSize="16sp"
+                            android:textColor="#000"
+                            app:mt_placeholder="destination"
+                            app:mt_searchIconDrawable="@drawable/ic_place_black"
+                            android:fontFamily="@font/roboto_medium"
+                            android:padding="3dp"
+
+                            />
+                </RelativeLayout>
+            </RelativeLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
     <fragment
+        android:layout_below="@+id/bannerLayout"
         android:id="@+id/mapFragment"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <com.mancj.materialsearchbar.MaterialSearchBar
-        android:layout_marginTop="100dp"
-        style="@style/MaterialSearchBarLight"
-        app:mt_speechMode="false"
-        app:mt_placeholder="Search destination"
-        app:mt_maxSuggestionsCount="6"
-        android:elevation="5dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:outlineProvider="bounds"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/searchBar1" />
-
+        android:layout_height="match_parent">
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/imgMyLocation"
             android:layout_width="wrap_content"
@@ -39,6 +91,11 @@
             android:layout_marginRight="20dp"
             android:elevation="4dp"
             android:src="@drawable/ic_my_location" />
+    </fragment>
 
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+
+
+</RelativeLayout>
