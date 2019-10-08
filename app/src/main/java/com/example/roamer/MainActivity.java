@@ -1,9 +1,11 @@
 package com.example.roamer;
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -30,11 +32,13 @@ import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import android.os.Looper;
 import android.text.Editable;
+import android.text.TextPaint;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
@@ -48,6 +52,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.mancj.materialsearchbar.MaterialSearchBar;
+import com.mancj.materialsearchbar.SimpleOnSearchActionListener;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
@@ -70,21 +75,25 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
     boolean flag=false;
     //LinearLayout bottomSheet;
-    BottomSheetBehavior bottomSheetBehavior;
+    //BottomSheetBehavior bottomSheetBehavior;
     private GoogleMap map;
     Location lastLocation;
     LocationRequest locationRequest;
     private FusedLocationProviderClient fusedLocationClient;
     private FloatingActionButton myLocationButton;
-    private EditText searchbar1,searchbar2;
     private PlacesClient placesClient;
     private List<AutocompletePrediction> predictionList;
-
+    com.mancj.materialsearchbar.MaterialSearchBar searchBar;
+    com.mancj.materialsearchbar.MaterialSearchBar searchBar0;
+    busList databaseHelper;
+    Geocoder geocoder;
+    List<Address> geocodedAddresses;
 
 
 
@@ -131,7 +140,7 @@ public class MainActivity extends AppCompatActivity
         } catch (IOException e) {
             Toast.makeText(this, "copy hoy nai", Toast.LENGTH_SHORT).show();
         }
-
+        databaseHelper=new busList(this);
 
         //map api things
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
@@ -140,22 +149,23 @@ public class MainActivity extends AppCompatActivity
         myLocationButton = (FloatingActionButton) findViewById(R.id.imgMyLocation);
 
         //search
-       // searchbar1=(EditText)findViewById(R.id.search_bar_1);
-       // searchbar2=(EditText)findViewById(R.id.search_bar_2);
-
-      /*  Places.initialize(this, "AIzaSyAYyzU_ZlHLTWS38tGj6ZvQx6q-Qrq8T3w");
-        searchBar = (MaterialSearchBar) findViewById(R.id.searchBar1);
-        placesClient = Places.createClient(this);
-        final AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
+        searchBar0=(com.mancj.materialsearchbar.MaterialSearchBar)findViewById(R.id.search_bar_1);
+        searchBar=(com.mancj.materialsearchbar.MaterialSearchBar)findViewById(R.id.search_bar_2);
+        //searchActionListener
         searchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
             @Override
             public void onSearchStateChanged(boolean enabled) {
-
             }
 
             @Override
             public void onSearchConfirmed(CharSequence text) {
-                startSearch(text.toString(), true, null, true);
+                startSearch(text.toString(), true, null, false);
+                LatLng latLng=null;
+                latLng= getLocationFromAddress(MainActivity.this,text.toString());
+                if(latLng!=null) {
+                    moveCamera(latLng);
+                }
+                searchBar.clearFocus();
             }
 
             @Override
@@ -165,44 +175,25 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+        //TextChangeListener
         searchBar.addTextChangeListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
 
-
-
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                final FindAutocompletePredictionsRequest predictionsRequest = FindAutocompletePredictionsRequest.builder()
-                        .setCountry("bd")
-                        .setTypeFilter(TypeFilter.ADDRESS)
-                        .setSessionToken(token)
-                        .setQuery(charSequence.toString())
-                        .build();
-                placesClient.findAutocompletePredictions(predictionsRequest).addOnCompleteListener(new OnCompleteListener<FindAutocompletePredictionsResponse>() {
-                    @Override
-                    public void onComplete(@NonNull Task<FindAutocompletePredictionsResponse> task) {
-                        if (task.isSuccessful()) {
-                            FindAutocompletePredictionsResponse predictionsResponse = task.getResult();
-                            if (predictionsResponse != null) {
-                                predictionList = predictionsResponse.getAutocompletePredictions();
-                                List<String> suggestionList = new ArrayList<>();
-                                for (int i = 0; i < predictionList.size(); i++) {
-                                    AutocompletePrediction prediction = predictionList.get(i);
-                                    suggestionList.add(prediction.getFullText(null).toString());
-                                }
-                                searchBar.updateLastSuggestions(suggestionList);
-                                if (!searchBar.isSuggestionsVisible())
-                                    searchBar.showSuggestionsList();
-
-                            }
-                        } else {
-                            Log.i("mytag", "prediction fetching task unsuccessfull");
-                        }
-                    }
-                });
+                /*Toast.makeText(MainActivity.this,charSequence.toString(),Toast.LENGTH_LONG).show();
+                Cursor cursor=databaseHelper.autocompleteQuery(charSequence.toString());
+                List<String> suggestionList = new ArrayList<>();
+                while(cursor.moveToNext()){
+                    suggestionList.add(cursor.getString(0));
+                }
+                Toast.makeText(MainActivity.this,suggestionList.get(0).toString(),Toast.LENGTH_LONG).show();
+                searchBar.updateLastSuggestions(suggestionList);
+                searchBar.showSuggestionsList();
+                */
             }
 
             @Override
@@ -210,7 +201,7 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-        */
+
 
     }
 
@@ -319,6 +310,7 @@ public class MainActivity extends AppCompatActivity
             for(Location location : locationResult.getLocations()){
                 if(getApplicationContext()!=null){
                     lastLocation = location;
+                    setSourceTextMyAddress();
                     if(!flag) {
                         LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
                         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -329,7 +321,6 @@ public class MainActivity extends AppCompatActivity
             }
         }
     };
-
     private void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -368,25 +359,43 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
-
-    /*private void geolocate(){
-        String searchString=searchbar2.getText().toString();
-        Geocoder geocoder=new Geocoder(MainActivity.this);
-        List<Address> list=new ArrayList<>();
-        try{
-            list=geocoder.getFromLocationName(searchString,1);
+    private void setSourceTextMyAddress(){
+        geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            geocodedAddresses=geocoder.getFromLocation(lastLocation.getLatitude(),lastLocation.getLongitude(),1);
+            String address = geocodedAddresses.get(0).getAddressLine(0);
+            searchBar0.setPlaceHolder(address);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        catch (IOException e){
-        }
-        if(list.size()>0){
-            Address address=list.get(0);
-            LatLng latLng = new LatLng(address.getLatitude(),address.getLongitude());
-            map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            map.animateCamera(CameraUpdateFactory.zoomTo(15));
-        }
-
     }
-    */
+
+    private LatLng getLocationFromAddress(Context context, String strAddress) {
+        List<Address> address;
+        LatLng p1 = null;
+
+        try {
+            // May throw an IOException
+            address = geocoder.getFromLocationName(strAddress, 1);
+            if (address == null) {
+                return null;
+            }
+
+            Address location = address.get(0);
+            p1 = new LatLng(location.getLatitude(), location.getLongitude() );
+
+        } catch (IOException ex) {
+            Toast.makeText(this, "not found!", Toast.LENGTH_SHORT).show();
+        }
+        return p1;
+    }
+    private void moveCamera(LatLng latLng){
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+            MarkerOptions options = new MarkerOptions()
+                    .position(latLng);
+            map.addMarker(options);
+    }
+
+
 }
 
