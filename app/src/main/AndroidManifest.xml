@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".RoadListByBus"></activity>
+        <activity android:name=".ShowRoute"></activity>
+        <activity android:name=".RoadListByBus" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -24,13 +25,13 @@
 
         <activity
             android:name=".BusListActivity"
-            android:label="Local Bus"></activity>
+            android:label="Local Bus" />
         <activity
             android:name=".CoachListActivity"
-            android:label="Coach"></activity>
+            android:label="Coach" />
         <activity
             android:name=".TrainListActivity"
-            android:label="Train"></activity>
+            android:label="Train" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
