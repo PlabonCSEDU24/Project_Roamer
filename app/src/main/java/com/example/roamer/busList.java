@@ -15,12 +15,13 @@ public class busList extends SQLiteOpenHelper {
     public static String APP_DATA_PATH="";
     public static final String DB_SUB_PATH="/databases/" + databaseName;
     private SQLiteDatabase dataBase;
-    private static final String tableName1="Bus";
-    private static final String tableName2="BusRoads";
-    private static final String busID="Bus_ID";
-    private static final String busName="Bus_Name";
+    private static final String tableName1="Vehicle";
+    private static final String tableName2="VehicleRoads";
+    private static final String busID="Vahicle_ID";
+    private static final String busName="Vahicle_Name";
     private static final String roadID="RoadID";
-    private static final String createBusTable="create table "+tableName1+"( "+busID+"INTEGER primary key autoincrement, "+busName+" varchar(100) primary key, "+roadID+" INTEGER, foreign key(RoadID) REFERENCES BusRoads(RoadID));";
+    private static final String type="Vahicle_Type";
+    private static final String createBusTable="create table "+tableName1+"( "+busID+" INTEGER primary key autoincrement, "+busName+" varchar(100) primary key, "+type+" int, "+roadID+" INTEGER, foreign key(RoadID) REFERENCES BusRoads(RoadID));";
     private static final String createRoadTable="create table "+tableName2+"( "+roadID+" INTEGER primary key autoincrement, " +
             "Stoppage1 varchar(100)," +
             "Stoppage2 varchar(100));";
