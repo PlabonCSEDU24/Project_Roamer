@@ -88,4 +88,5 @@ public class busList extends SQLiteOpenHelper {
         Cursor cursor= sqLiteDatabase.rawQuery("select Bus_Name from "+tableName1+" where Bus_Name like '%"+str+"%'" ,null);
         return cursor;
     }
+
 }

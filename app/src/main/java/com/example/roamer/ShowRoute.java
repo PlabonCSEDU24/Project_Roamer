@@ -6,7 +6,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.akexorcist.googledirection.DirectionCallback;
+import com.akexorcist.googledirection.GoogleDirection;
+import com.akexorcist.googledirection.model.Direction;
+import com.directions.route.AbstractRouting;
+import com.directions.route.Route;
+import com.directions.route.RouteException;
+import com.directions.route.Routing;
+import com.directions.route.RoutingListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -16,8 +25,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-public class ShowRoute extends AppCompatActivity implements OnMapReadyCallback,TaskLoadedCallback {
+import java.util.ArrayList;
+import java.util.List;
+
+public class ShowRoute extends AppCompatActivity implements OnMapReadyCallback, RoutingListener {
     private GoogleMap mMap;
+    private List<Polyline> polylines;
+    private static final int[] COLORS = new int[]{R.color.primary_dark_material_light};
     private MarkerOptions place1, place2;
     Button getDirection;
     private Polyline currentPolyline;
@@ -27,14 +41,13 @@ public class ShowRoute extends AppCompatActivity implements OnMapReadyCallback,T
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_route);
         doyelChattar = new LatLng(23.728014, 90.400323);
-        place1 = new MarkerOptions().position(new LatLng(23.728014, 90.400323)).title("Location 1");
-        place2 = new MarkerOptions().position(new LatLng(23.7318239,90.3956007)).title("Location 2");
-
+        place1 = new MarkerOptions().position(new LatLng(23.755613, 90.368591)).title("lalmatia");
+        place2 = new MarkerOptions().position(new LatLng(23.728014,90.400323)).title("doyelChattar");
+        polylines=new ArrayList<>();
         SupportMapFragment mapFragment= (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
 
-        new FetchURL(ShowRoute.this).execute(getUrl(place1.getPosition(), place2.getPosition(), "driving"), "driving");
     }
 
     @Override
@@ -44,28 +57,74 @@ public class ShowRoute extends AppCompatActivity implements OnMapReadyCallback,T
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(doyelChattar, 11));
         mMap.addMarker(place1);
         mMap.addMarker(place2);
+        LatLng origin=new LatLng(23.728014,90.400323);
+        LatLng destination=new LatLng(23.755613,90.368591);
+        getRoute(origin,destination);
+
+
     }
 
-    private String getUrl(LatLng origin, LatLng dest, String directionMode) {
-        // Origin of route
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
-        // Destination of route
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
-        // Mode
-        String mode = "mode=" + directionMode;
-        // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + mode;
-        // Output format
-        String output = "json";
-        // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + getString(R.string.map_key);
-        return url;
+
+
+
+
+
+    @Override
+    public void onRoutingFailure(RouteException e) {
+        if(e != null) {
+            Toast.makeText(this, "Error eta: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(this, "Something went wrong, Try again", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Override
-    public void onTaskDone(Object... values) {
-        if (currentPolyline != null)
-            currentPolyline.remove();
-        currentPolyline = mMap.addPolyline((PolylineOptions) values[0]);
+    public void onRoutingStart() {
+
+    }
+
+    @Override
+    public void onRoutingSuccess(ArrayList<Route> route, int shortestRouteIndex) {
+        if (polylines.size() > 0) {
+            for (Polyline poly : polylines) {
+                poly.remove();
+            }
+        }
+
+        polylines = new ArrayList<>();
+        //add route(s) to the map.
+        for (int i = 0; i < route.size(); i++) {
+            PolylineOptions polyOptions = new PolylineOptions();
+            polyOptions.width(10 + i * 3);
+            polyOptions.addAll(route.get(i).getPoints());
+            Polyline polyline = mMap.addPolyline(polyOptions);
+            polylines.add(polyline);
+
+            Toast.makeText(getApplicationContext(), "Route " + (i + 1) + ": distance - " + route.get(i).getDistanceValue() + ": duration - " + route.get(i).getDurationValue(), Toast.LENGTH_SHORT).show();
+
+        }
+    }
+
+    @Override
+    public void onRoutingCancelled() {
+
+    }
+
+    private void getRoute(LatLng source, LatLng destination) {
+        Routing routing=new Routing.Builder()
+                .travelMode(AbstractRouting.TravelMode.DRIVING)
+                .withListener(this)
+                .alternativeRoutes(false)
+                .waypoints(source,destination)
+                .key("AIzaSyBMqiUuZn23MmLndhWUX56SKgwV_GA0A8U")
+                .build();
+        routing.execute();
+    }
+    private void erasePolylines(){
+        for(Polyline lines:polylines){
+            lines.remove();
+        }
+        polylines.clear();
     }
 }

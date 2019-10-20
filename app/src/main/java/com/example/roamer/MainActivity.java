@@ -80,8 +80,6 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
     boolean flag=false;
-    //LinearLayout bottomSheet;
-    //BottomSheetBehavior bottomSheetBehavior;
     private GoogleMap map;
     Location lastLocation;
     LocationRequest locationRequest;
@@ -94,13 +92,14 @@ public class MainActivity extends AppCompatActivity
     busList databaseHelper;
     Geocoder geocoder;
     List<Address> geocodedAddresses;
+    String myArea;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        //navigation things
+        /*:::::::::::::::::::::::navigation things::::::::::::::::::::::*/
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -112,96 +111,27 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
-        //status bar transparent
+
+        /*:::::::::::::::::::::::status bar transparent::::::::::::::::::::::*/
         Window window = this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(Color.TRANSPARENT);
 
-        //ship previously saved database with application
+        /*:::::::::::::::::::::::ship previously saved database with application::::::::::::::::::::::*/
 
-        String appDataPath = this.getApplicationInfo().dataDir;
-        File dbFolder = new File(appDataPath + "/databases");//Make sure the /databases folder exists
-        dbFolder.mkdir();//This can be called multiple times.
+        shipDatabase();
 
-        File dbFilePath = new File(appDataPath + "/databases/BusDatabase.sqlite");
-
-        try {
-            InputStream inputStream = this.getAssets().open("BusDatabase.sqlite");
-            OutputStream outputStream = new FileOutputStream(dbFilePath);
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, length);
-            }
-            outputStream.flush();
-            outputStream.close();
-            inputStream.close();
-        } catch (IOException e) {
-            Toast.makeText(this, "copy hoy nai", Toast.LENGTH_SHORT).show();
-        }
-        databaseHelper=new busList(this);
-
-        //map api things
+        /*:::::::::::::::::::::::map api things::::::::::::::::::::::*/
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         myLocationButton = (FloatingActionButton) findViewById(R.id.imgMyLocation);
 
-        //search
+        /*:::::::::::::::::::::::search::::::::::::::::::::::*/
         searchBar0=(com.mancj.materialsearchbar.MaterialSearchBar)findViewById(R.id.search_bar_1);
         searchBar=(com.mancj.materialsearchbar.MaterialSearchBar)findViewById(R.id.search_bar_2);
-        //searchActionListener
-        searchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
-            @Override
-            public void onSearchStateChanged(boolean enabled) {
-            }
-
-            @Override
-            public void onSearchConfirmed(CharSequence text) {
-                startSearch(text.toString(), true, null, false);
-                LatLng latLng=null;
-                latLng= getLocationFromAddress(MainActivity.this,text.toString());
-                if(latLng!=null) {
-                    moveCamera(latLng);
-                }
-                searchBar.clearFocus();
-            }
-
-            @Override
-            public void onButtonClicked(int buttonCode) {
-                if (buttonCode == MaterialSearchBar.BUTTON_BACK) {
-                    searchBar.disableSearch();
-                }
-            }
-        });
-        //TextChangeListener
-        searchBar.addTextChangeListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                /*Toast.makeText(MainActivity.this,charSequence.toString(),Toast.LENGTH_LONG).show();
-                Cursor cursor=databaseHelper.autocompleteQuery(charSequence.toString());
-                List<String> suggestionList = new ArrayList<>();
-                while(cursor.moveToNext()){
-                    suggestionList.add(cursor.getString(0));
-                }
-                Toast.makeText(MainActivity.this,suggestionList.get(0).toString(),Toast.LENGTH_LONG).show();
-                searchBar.updateLastSuggestions(suggestionList);
-                searchBar.showSuggestionsList();
-                */
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
+        addListenersTOSearchBars();
 
     }
 
@@ -300,6 +230,7 @@ public class MainActivity extends AppCompatActivity
                 LatLng latLng = new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
                 map.animateCamera(cameraUpdate);
+                setSourceTextMyAddress();
             }
         });
         //initSearch();
@@ -310,8 +241,8 @@ public class MainActivity extends AppCompatActivity
             for(Location location : locationResult.getLocations()){
                 if(getApplicationContext()!=null){
                     lastLocation = location;
-                    setSourceTextMyAddress();
                     if(!flag) {
+                        setSourceTextMyAddress();
                         LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
                         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                         map.animateCamera(CameraUpdateFactory.zoomTo(15));
@@ -364,6 +295,9 @@ public class MainActivity extends AppCompatActivity
         try {
             geocodedAddresses=geocoder.getFromLocation(lastLocation.getLatitude(),lastLocation.getLongitude(),1);
             String address = geocodedAddresses.get(0).getAddressLine(0);
+            String area=geocodedAddresses.get(0).getSubLocality();
+            myArea=area;
+            searchBar0.setText(area);
             searchBar0.setPlaceHolder(address);
         } catch (Exception e) {
             e.printStackTrace();
@@ -394,6 +328,80 @@ public class MainActivity extends AppCompatActivity
             MarkerOptions options = new MarkerOptions()
                     .position(latLng);
             map.addMarker(options);
+    }
+    private void addListenersTOSearchBars(){
+        searchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
+            @Override
+            public void onSearchStateChanged(boolean enabled) {
+            }
+
+            @Override
+            public void onSearchConfirmed(CharSequence text) {
+                startSearch(text.toString(), true, null, false);
+                LatLng latLng=null;
+                latLng= getLocationFromAddress(MainActivity.this,text.toString());
+                if(latLng!=null) {
+                    moveCamera(latLng);
+                }
+                searchBar.clearFocus();
+            }
+
+            @Override
+            public void onButtonClicked(int buttonCode) {
+                if (buttonCode == MaterialSearchBar.BUTTON_BACK) {
+                    searchBar.disableSearch();
+                }
+            }
+        });
+        //TextChangeListener
+        searchBar.addTextChangeListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                /*Toast.makeText(MainActivity.this,charSequence.toString(),Toast.LENGTH_LONG).show();
+                Cursor cursor=databaseHelper.autocompleteQuery(charSequence.toString());
+                List<String> suggestionList = new ArrayList<>();
+                while(cursor.moveToNext()){
+                    suggestionList.add(cursor.getString(0));
+                }
+                Toast.makeText(MainActivity.this,suggestionList.get(0).toString(),Toast.LENGTH_LONG).show();
+                searchBar.updateLastSuggestions(suggestionList);
+                searchBar.showSuggestionsList();
+                */
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+    }
+    private void shipDatabase(){
+        String appDataPath = this.getApplicationInfo().dataDir;
+        File dbFolder = new File(appDataPath + "/databases");//Make sure the /databases folder exists
+        dbFolder.mkdir();//This can be called multiple times.
+
+        File dbFilePath = new File(appDataPath + "/databases/BusDatabase.sqlite");
+
+        try {
+            InputStream inputStream = this.getAssets().open("BusDatabase.sqlite");
+            OutputStream outputStream = new FileOutputStream(dbFilePath);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+            outputStream.flush();
+            outputStream.close();
+            inputStream.close();
+        } catch (IOException e) {
+            Toast.makeText(this, "copy hoy nai", Toast.LENGTH_SHORT).show();
+        }
+        databaseHelper=new busList(this);
     }
 
 

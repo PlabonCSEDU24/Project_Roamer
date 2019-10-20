@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="map_key" translatable="false">
-        AIzaSyAYyzU_ZlHLTWS38tGj6ZvQx6q-Qrq8T3w
+    <string name="map_key" templateMergeStrategy="preserve" translatable="false">
+        AIzaSyBMqiUuZn23MmLndhWUX56SKgwV_GA0A8U
     </string>
+    AIzaSyAYyzU_ZlHLTWS38tGj6ZvQx6q-Qrq8T3w
 </resources>
+    <!--AIzaSyAYyzU_ZlHLTWS38tGj6ZvQx6q-Qrq8T3w-->
