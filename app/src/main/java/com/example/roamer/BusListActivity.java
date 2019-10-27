@@ -1,16 +1,15 @@
 package com.example.roamer;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
@@ -21,7 +20,8 @@ public class BusListActivity extends AppCompatActivity {
     TextView textView;
     RecyclerView recyclerView;
     Adapter adapter;
-    ArrayList<String> stoppageList=new ArrayList<>();
+    ArrayList<Integer> stoppageList=new ArrayList<>();
+    ArrayList<String> stoppageInRoad=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,18 +50,33 @@ public class BusListActivity extends AppCompatActivity {
         while(roadCursor.moveToNext()){
             if(Integer.parseInt(roadCursor.getString(0))==roadId){
                 if(firstStoppage==0){
-                    stoppageList.add(roadCursor.getString(1));
+                    stoppageList.add(Integer.parseInt(roadCursor.getString(1)));
                     firstStoppage=1;
                 }
-                stoppageList.add(roadCursor.getString(2));
+                stoppageList.add(Integer.parseInt(roadCursor.getString(2)));
             }
             else if(Integer.parseInt(roadCursor.getString(0))>roadId)
                 break;
         }
     }
+    void makeStoppageList(){
+        Cursor cursor=busList.getStoppage();
+        int n=stoppageList.size();
+        ArrayList<String> stoppage=new ArrayList<>();
+        stoppageInRoad.clear();
+        while(cursor.moveToNext()){
+            stoppage.add(cursor.getString(1));
+        }
+        for(int i=0;i<n;i++){
+            String str=stoppage.get(stoppageList.get(i)-1);
+            stoppageInRoad.add(str);
+        }
+    }
+
     void createNewActivity(String busName){
+        makeStoppageList();
         Intent intent=new Intent(this,RoadListByBus.class);
-        intent.putExtra("ara",stoppageList);
+        intent.putExtra("ara",stoppageInRoad);
         intent.putExtra("busName",busName);
         startActivity(intent);
     }
