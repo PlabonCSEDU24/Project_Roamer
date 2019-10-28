@@ -15,9 +15,9 @@ public class busList extends SQLiteOpenHelper {
     public static String APP_DATA_PATH="";
     public static final String DB_SUB_PATH="/databases/" + databaseName;
     private SQLiteDatabase dataBase;
-    private static final String tableName1="Vehicle";
-    private static final String tableName2="VehicleRoads";
-    private static final String tableName3="stoppageIndex";
+    private static final String tableName1="VehicleList";
+    private static final String tableName2="RouteList";
+    private static final String tableName3="Places";
     private static final String busID="Vahicle_ID";
     private static final String busName="Vahicle_Name";
     private static final String roadID="RoadID";

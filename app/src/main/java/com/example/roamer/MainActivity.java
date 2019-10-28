@@ -316,7 +316,7 @@ public class MainActivity extends AppCompatActivity
             }
 
             Address location = address.get(0);
-            p1 = new LatLng(location.getLatitude(), location.getLongitude() );
+            p1 = new LatLng(location.getLatitude(), location.getLongitude());
 
         } catch (IOException ex) {
             Toast.makeText(this, "not found!", Toast.LENGTH_SHORT).show();
@@ -362,7 +362,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                /*Toast.makeText(MainActivity.this,charSequence.toString(),Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this,charSequence.toString(),Toast.LENGTH_LONG).show();
                 Cursor cursor=databaseHelper.autocompleteQuery(charSequence.toString());
                 List<String> suggestionList = new ArrayList<>();
                 while(cursor.moveToNext()){
@@ -371,7 +371,7 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(MainActivity.this,suggestionList.get(0).toString(),Toast.LENGTH_LONG).show();
                 searchBar.updateLastSuggestions(suggestionList);
                 searchBar.showSuggestionsList();
-                */
+
             }
 
             @Override
