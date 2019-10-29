@@ -54,8 +54,8 @@ public class TrainListActivity extends AppCompatActivity {
         busList = new busList(this);
 
         try {
-            origin = busList.getStoppageId("Kamalapur");
-            destination = busList.getStoppageId("Gabtoli");
+            origin = busList.getStoppageId("Kallyanpur");
+            destination = busList.getStoppageId("Sadarghat");
         } catch (Exception e) {
             Toast.makeText(this, "Failed" + e, Toast.LENGTH_SHORT).show();
         }
@@ -95,8 +95,6 @@ public class TrainListActivity extends AppCompatActivity {
         }
     }
     void dfs(int root,int destination){
-        parent[root] =privious;
-        privious=root;
         try {
             if (root == destination) {
                 routeFound = 1;
@@ -113,8 +111,10 @@ public class TrainListActivity extends AppCompatActivity {
                     if(routeFound==1)
                         return;
                     int x = adjList[root].get(i);
-
-                    dfs(x, destination);
+                    if(parent[x]==-1 && nodeColor[x].equals("White")) {
+                        parent[x] = root;
+                        dfs(x, destination);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -122,17 +122,13 @@ public class TrainListActivity extends AppCompatActivity {
         }
     }
     void prnt(int des){
-        while(true){
-            try{
-            stop.add(des);
+        int i=0;
+        while(i<leangth){
+            Toast.makeText(this,des+" "+ parent[des], Toast.LENGTH_SHORT).show();
             des=parent[des];
-            if(parent[des]==-1 || des==-1)
-                break;
-            } catch (Exception e) {
-                Toast.makeText(this, ""+e, Toast.LENGTH_SHORT).show();
-            }
-
+            i++;
+            if(des==-1)
+                return;
         }
-        //Toast.makeText(this, ""+stop.size(), Toast.LENGTH_SHORT).show();
     }
 }
