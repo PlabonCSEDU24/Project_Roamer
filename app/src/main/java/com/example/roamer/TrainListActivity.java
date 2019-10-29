@@ -12,7 +12,6 @@ import java.util.Vector;
 
 public class TrainListActivity extends AppCompatActivity {
     busList busList;
-    FindTheRoute findTheRoute;
     int routeFound=0;
     int leangth=150;
     Vector<Integer>[] adjList=new Vector[leangth];
