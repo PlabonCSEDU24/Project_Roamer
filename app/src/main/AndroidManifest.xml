@@ -19,7 +19,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".UberHandler"></activity>
+        <activity android:name=".DataUpdateActivity"></activity>
+        <activity android:name=".UberHandler" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

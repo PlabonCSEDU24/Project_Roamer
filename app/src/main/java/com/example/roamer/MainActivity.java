@@ -197,6 +197,11 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
                 break;
             }
+            case R.id.update:{
+                Intent intent = new Intent(this, DataUpdateActivity.class);
+                startActivity(intent);
+                break;
+            }
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

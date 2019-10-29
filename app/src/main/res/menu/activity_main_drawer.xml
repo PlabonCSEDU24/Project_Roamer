@@ -41,6 +41,9 @@
     <item android:title="Communicate">
         <menu>
             <item
+                android:id="@+id/update"
+                android:title="Data Update Request" />
+            <item
                 android:id="@+id/nav_tools"
                 android:icon="@drawable/ic_menu_manage"
                 android:title="@string/menu_tools" />
