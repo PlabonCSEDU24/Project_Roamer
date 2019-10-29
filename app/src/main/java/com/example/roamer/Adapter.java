@@ -37,7 +37,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         if(!mCursor.moveToPosition(position)){
             return;
         }
-        if((mCursor.getString(2)).equals("bus")){
+        if((mCursor.getString(2)).equals("Bus")){
             bus=new Bus(Integer.parseInt(mCursor.getString(0)),mCursor.getString(1),Integer.parseInt(mCursor.getString(3)));
             busArrayList.add(bus);
             holder.busName.setText(bus.getBusName());

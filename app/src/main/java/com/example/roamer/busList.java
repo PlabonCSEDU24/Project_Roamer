@@ -1,6 +1,7 @@
 package com.example.roamer;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -101,6 +102,18 @@ public class busList extends SQLiteOpenHelper {
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
         Cursor cursor= sqLiteDatabase.rawQuery("select Bus_Name from "+tableName1+" where Bus_Name like '%"+str+"%'" ,null);
         return cursor;
+    }
+    public int getStoppageId(String str){
+        SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
+        try {
+            Cursor cursor = sqLiteDatabase.rawQuery("select * from Places where place_name ='"+str+"'", null);
+            cursor.moveToNext();
+            Toast.makeText(context, cursor.getString(0), Toast.LENGTH_SHORT).show();
+            return cursor.getInt(0);
+        } catch (Resources.NotFoundException e) {
+            Toast.makeText(context, ""+e, Toast.LENGTH_SHORT).show();
+        }
+        return 0;
     }
 
 }
