@@ -53,6 +53,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mancj.materialsearchbar.SimpleOnSearchActionListener;
+import com.uber.sdk.android.core.UberSdk;
+import com.uber.sdk.android.rides.RideRequestButton;
+import com.uber.sdk.core.auth.Scope;
+import com.uber.sdk.rides.client.SessionConfiguration;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
@@ -65,6 +69,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,6 +79,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -183,6 +189,11 @@ public class MainActivity extends AppCompatActivity
             }
             case R.id.nav_train: {
                 Intent intent = new Intent(this, TrainListActivity.class);
+                startActivity(intent);
+                break;
+            }
+            case R.id.uber: {
+                Intent intent = new Intent(this, UberHandler.class);
                 startActivity(intent);
                 break;
             }
@@ -405,7 +416,6 @@ public class MainActivity extends AppCompatActivity
         }
         databaseHelper=new busList(this);
     }
-
-
+    
 }
 

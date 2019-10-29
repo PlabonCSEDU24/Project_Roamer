@@ -18,6 +18,10 @@
             android:id="@+id/nav_train"
             android:icon="@drawable/ic_menu_train"
             android:title="@string/menu_train" />
+        <item
+            android:id="@+id/uber"
+            android:icon="@drawable/ic_menu_train"
+            android:title="Uber"/>
     </group>
         </menu>
     </item>
