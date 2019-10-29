@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -48,14 +49,14 @@ public class BusListActivity extends AppCompatActivity {
         stoppageList.clear();
         int firstStoppage=0;
         while(roadCursor.moveToNext()){
-            if(Integer.parseInt(roadCursor.getString(0))==roadId){
+            if(Integer.parseInt(roadCursor.getString(1))==roadId){
                 if(firstStoppage==0){
-                    stoppageList.add(Integer.parseInt(roadCursor.getString(1)));
+                    stoppageList.add(Integer.parseInt(roadCursor.getString(2)));
                     firstStoppage=1;
                 }
-                stoppageList.add(Integer.parseInt(roadCursor.getString(2)));
+                stoppageList.add(Integer.parseInt(roadCursor.getString(3)));
             }
-            else if(Integer.parseInt(roadCursor.getString(0))>roadId)
+            else if(Integer.parseInt(roadCursor.getString(1))>roadId)
                 break;
         }
     }
@@ -68,12 +69,13 @@ public class BusListActivity extends AppCompatActivity {
             stoppage.add(cursor.getString(1));
         }
         for(int i=0;i<n;i++){
-            String str=stoppage.get(stoppageList.get(i)-1);
+            String str=stoppage.get(stoppageList.get(i));
             stoppageInRoad.add(str);
         }
     }
 
     void createNewActivity(String busName){
+        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
         makeStoppageList();
         Intent intent=new Intent(this,RoadListByBus.class);
         intent.putExtra("ara",stoppageInRoad);
