@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -37,12 +38,22 @@ public class RoadListByBus extends AppCompatActivity {
             busName=bundle.getString("busName");
         }
         textView.setText(busName);
-
-      // ArrayAdapter<String> stoppageArrayList=new ArrayAdapter<>(this,R.layout.stoppage_list,R.id.stoppageTextId,stoppageArray);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                newActivityToDrawRoute();
+            }
+        });
+        // ArrayAdapter<String> stoppageArrayList=new ArrayAdapter<>(this,R.layout.stoppage_list,R.id.stoppageTextId,stoppageArray);
         //listView.setAdapter(stoppageArrayList);
         ListviewAdapter adapter=new ListviewAdapter(this,stoppageArray);
         listView.setAdapter(adapter);
 
+    }
+    void newActivityToDrawRoute(){
+        Intent intent=new Intent(this,ShowRoute.class);
+        intent.putExtra("stoppageList",stoppageArray);
+        startActivity(intent);
     }
 
     class ListviewAdapter implements ListAdapter {

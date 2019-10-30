@@ -20,7 +20,7 @@ public class TrainListActivity extends AppCompatActivity {
     Vector<Integer> [][]roadId=new Vector[leangth][leangth];
     ArrayList<String> stoppageList=new ArrayList<>();
     String[] nodeColor=new String[leangth];
-    ArrayList<Integer> stop=new ArrayList<>();
+    ArrayList<String> stoppageInRoad=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,7 +124,8 @@ public class TrainListActivity extends AppCompatActivity {
     void prnt(int des){
         int i=0;
         while(i<leangth){
-            Toast.makeText(this,des+" "+ parent[des], Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,stoppageList.get(des), Toast.LENGTH_SHORT).show();
+            stoppageInRoad.add(stoppageList.get(des)); ///This contains all stoppage of user's desired route in reverse order;
             des=parent[des];
             i++;
             if(des==-1)
