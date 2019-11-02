@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class BusListActivity extends AppCompatActivity {
+
     SQLiteDatabase sqLiteDatabase;
     Cursor busCursor,roadCursor;
     busList busList;

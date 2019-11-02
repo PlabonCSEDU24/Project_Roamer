@@ -73,6 +73,7 @@ public class busList extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
         try{
             db.execSQL(dropTable1);
             db.execSQL(dropTable2);

@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+
+
 public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     private static clickListener clickListener;
     private Context mContext;

@@ -1,6 +1,7 @@
 package com.example.roamer;
 
 public class Bus {
+
     private int busId;
     private String busName;
     private int roadId;

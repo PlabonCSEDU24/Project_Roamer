@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 public class DataUpdateActivity extends AppCompatActivity implements View.OnClickListener {
 
+
     private EditText nameEditTextId,vehicleNameEditTextId,vehicleTypeEditTextId,routeListEditTextId;
     private Button sendDataButtonId;
     @Override

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 public class RoadListByBus extends AppCompatActivity {
     TextView textView;
     ListView listView;
-
     ArrayList<String> stoppageArray;
     String busName;
     @Override
@@ -50,7 +50,7 @@ public class RoadListByBus extends AppCompatActivity {
         listView.setAdapter(adapter);
 
     }
-    void newActivityToDrawRoute(){
+    public void newActivityToDrawRoute(){
         Intent intent=new Intent(this,ShowRoute.class);
         intent.putExtra("stoppageList",stoppageArray);
         startActivity(intent);

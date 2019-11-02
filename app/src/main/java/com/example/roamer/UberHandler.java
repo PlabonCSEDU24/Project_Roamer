@@ -16,6 +16,7 @@ public class UberHandler extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_uber_handler);
         SessionConfiguration config = new SessionConfiguration.Builder()

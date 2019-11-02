@@ -85,6 +85,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+
     boolean flag=false;
     private GoogleMap map;
     Location lastLocation;

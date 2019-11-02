@@ -47,15 +47,11 @@ public class ShowRoute extends AppCompatActivity implements OnMapReadyCallback, 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_route);
-        doyelChattar = new LatLng(23.728014, 90.400323);
-        place1 = new MarkerOptions().position(new LatLng(23.755613, 90.368591)).title("lalmatia");
-        place2 = new MarkerOptions().position(new LatLng(23.728014,90.400323)).title("doyelChattar");
         Bundle bundle=getIntent().getExtras();
         if(bundle!=null){
             stoppageList=bundle.getStringArrayList("stoppageList");
         }
         polylines=new ArrayList<>();
-        makeStoppegLatLngList();
         SupportMapFragment mapFragment= (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
@@ -63,6 +59,7 @@ public class ShowRoute extends AppCompatActivity implements OnMapReadyCallback, 
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        makeStoppegLatLngList();
         mMap = googleMap;
         Log.d("mylog", "Added Markers");
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(stoppageLatLngList.get(0), 11));
