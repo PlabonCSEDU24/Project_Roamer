@@ -3,6 +3,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -10,6 +11,7 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
 import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
@@ -202,6 +204,14 @@ public class MainActivity extends AppCompatActivity
                 Intent intent = new Intent(this, DataUpdateActivity.class);
                 startActivity(intent);
                 break;
+            }
+            case R.id.nav_share:{
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                sharingIntent.setType("text/plain");
+                String shareBody = "\nhttps://github.com/PlabonCSEDU24/Project_Roamer\n";
+                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Let me share an useful apps:\n");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                startActivity(Intent.createChooser(sharingIntent, "Share via"));
             }
         }
 
