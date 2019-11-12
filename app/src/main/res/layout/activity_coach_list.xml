@@ -1,30 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".CoachListActivity"
-    android:background="@color/colorAccent"
-    android:gravity="center"
-    android:orientation="vertical"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".CoachListActivity"
+android:orientation="vertical"
+    android:background="@color/quantum_white_100"
     >
-
-    <TextView
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="COACH LIST"
-        android:textSize="32sp">
+        android:orientation="horizontal"
+        android:elevation="6dp">
+        <LinearLayout
+            android:layout_marginTop="26dp"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:orientation="vertical">
+        </LinearLayout>
 
-    </TextView>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Show road"
-        android:id="@+id/showRoadId"
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/quantum_grey300"/>
 
-        >
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/source_field"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:hint="source"
+        android:fontFamily="@font/roboto_medium"
+        android:textFontWeight="900"
+        android:textAlignment="viewStart"
+        android:paddingLeft="20dp"
+        android:background="?selectableItemBackground"/>
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/destination_field"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:hint="destination"
+        android:fontFamily="@font/roboto_medium"
+        android:textFontWeight="900"
+        android:textAlignment="viewStart"
+        android:paddingLeft="20dp"
+        android:background="?selectableItemBackground"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/quantum_grey300"/>
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="260dp">
 
-    </Button>
+    </ListView>
+
 
 </LinearLayout>

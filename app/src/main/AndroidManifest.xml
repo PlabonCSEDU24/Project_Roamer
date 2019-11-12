@@ -19,7 +19,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".DataUpdateActivity"></activity>
+        <activity android:name=".Search"></activity>
+        <activity android:name=".DataUpdateActivity" />
         <activity android:name=".UberHandler" />
 
         <meta-data

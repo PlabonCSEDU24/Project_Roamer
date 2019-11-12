@@ -53,8 +53,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.mancj.materialsearchbar.MaterialSearchBar;
-import com.mancj.materialsearchbar.SimpleOnSearchActionListener;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.uber.sdk.android.core.UberSdk;
 import com.uber.sdk.android.rides.RideRequestButton;
 import com.uber.sdk.core.auth.Scope;
@@ -68,6 +67,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -93,16 +93,20 @@ public class MainActivity extends AppCompatActivity
     Location lastLocation;
     LocationRequest locationRequest;
     private FusedLocationProviderClient fusedLocationClient;
-    private FloatingActionButton myLocationButton;
+    private androidx.cardview.widget.CardView myLocationButton;
     private PlacesClient placesClient;
     private List<AutocompletePrediction> predictionList;
-    com.mancj.materialsearchbar.MaterialSearchBar searchBar;
-    com.mancj.materialsearchbar.MaterialSearchBar searchBar0;
+
     busList databaseHelper;
     Geocoder geocoder;
     List<Address> geocodedAddresses;
     String myArea;
 
+    Button findVehicleButton;
+    Button slideUpButton;
+    SlidingUpPanelLayout layouta;
+    Toolbar toolbar;
+    EditText searchField1,searchField2;
 
 
     @Override
@@ -111,7 +115,7 @@ public class MainActivity extends AppCompatActivity
         /*:::::::::::::::::::::::navigation things::::::::::::::::::::::*/
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(Color.TRANSPARENT);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -135,13 +139,24 @@ public class MainActivity extends AppCompatActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        myLocationButton = (FloatingActionButton) findViewById(R.id.imgMyLocation);
+        myLocationButton = (androidx.cardview.widget.CardView) findViewById(R.id.imgMyLocation);
 
         /*:::::::::::::::::::::::search::::::::::::::::::::::*/
-        searchBar0=(com.mancj.materialsearchbar.MaterialSearchBar)findViewById(R.id.search_bar_1);
-        searchBar=(com.mancj.materialsearchbar.MaterialSearchBar)findViewById(R.id.search_bar_2);
-        addListenersTOSearchBars();
+      //  searchBar0=(com.mancj.materialsearchbar.MaterialSearchBar)findViewById(R.id.search_bar_1);
+      //  searchBar=(com.mancj.materialsearchbar.MaterialSearchBar)findViewById(R.id.search_bar_2);
+        //addListenersTOSearchBars();
 
+        //:::::::::::::::::::::::::::::::sliding up panel:::::::::::::::::::::::::::::::::::
+        layouta = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
+        findVehicleButton=(Button)findViewById(R.id.findTransportButton);
+        findVehicleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                layouta.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+            }
+        });
+
+    searchField1=(EditText)findViewById(R.id.source_field);
     }
 
     @Override
@@ -269,7 +284,7 @@ public class MainActivity extends AppCompatActivity
                 if(getApplicationContext()!=null){
                     lastLocation = location;
                     if(!flag) {
-                        setSourceTextMyAddress();
+                      //  setSourceTextMyAddress();
                         LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
                         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                         map.animateCamera(CameraUpdateFactory.zoomTo(15));
@@ -324,12 +339,13 @@ public class MainActivity extends AppCompatActivity
             String address = geocodedAddresses.get(0).getAddressLine(0);
             String area=geocodedAddresses.get(0).getSubLocality();
             myArea=area;
-            searchBar0.setText(area);
-            searchBar0.setPlaceHolder(address);
+            searchField1.setHint(address);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
 
     private LatLng getLocationFromAddress(Context context, String strAddress) {
         List<Address> address;
@@ -356,7 +372,7 @@ public class MainActivity extends AppCompatActivity
                     .position(latLng);
             map.addMarker(options);
     }
-    private void addListenersTOSearchBars(){
+    /*private void addListenersTOSearchBars(){
         searchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
             @Override
             public void onSearchStateChanged(boolean enabled) {
@@ -399,7 +415,7 @@ public class MainActivity extends AppCompatActivity
                 searchBar.updateLastSuggestions(suggestionList);
                 searchBar.showSuggestionsList();
 
-                 */
+
 
             }
 
@@ -409,6 +425,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+    */
     private void shipDatabase(){
         String appDataPath = this.getApplicationInfo().dataDir;
         File dbFolder = new File(appDataPath + "/databases");//Make sure the /databases folder exists
