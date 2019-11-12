@@ -42,6 +42,7 @@ public class busList extends SQLiteOpenHelper {
 
     }
 
+
     public boolean openDataBase() throws SQLException {
         String mPath = APP_DATA_PATH + DB_SUB_PATH;
         //Note that this method assumes that the db file is already copied in place

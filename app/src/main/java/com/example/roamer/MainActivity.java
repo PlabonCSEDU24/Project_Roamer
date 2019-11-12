@@ -53,6 +53,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.uber.sdk.android.core.UberSdk;
 import com.uber.sdk.android.rides.RideRequestButton;
@@ -106,7 +107,8 @@ public class MainActivity extends AppCompatActivity
     Button slideUpButton;
     SlidingUpPanelLayout layouta;
     Toolbar toolbar;
-    EditText searchField1,searchField2;
+    com.mancj.materialsearchbar.MaterialSearchBar searchBar0,searchBar;
+    FindVehicle findVehicle;
 
 
     @Override
@@ -142,9 +144,9 @@ public class MainActivity extends AppCompatActivity
         myLocationButton = (androidx.cardview.widget.CardView) findViewById(R.id.imgMyLocation);
 
         /*:::::::::::::::::::::::search::::::::::::::::::::::*/
-      //  searchBar0=(com.mancj.materialsearchbar.MaterialSearchBar)findViewById(R.id.search_bar_1);
-      //  searchBar=(com.mancj.materialsearchbar.MaterialSearchBar)findViewById(R.id.search_bar_2);
-        //addListenersTOSearchBars();
+        searchBar0=(com.mancj.materialsearchbar.MaterialSearchBar)findViewById(R.id.search_bar_1);
+        searchBar=(com.mancj.materialsearchbar.MaterialSearchBar)findViewById(R.id.search_bar_2);
+        addListenersTOSearchBars();
 
         //:::::::::::::::::::::::::::::::sliding up panel:::::::::::::::::::::::::::::::::::
         layouta = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
@@ -153,10 +155,12 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 layouta.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                searchBar.requestFocus();
             }
         });
 
-    searchField1=(EditText)findViewById(R.id.source_field);
+        findVehicle=new FindVehicle();
+
     }
 
     @Override
@@ -288,6 +292,7 @@ public class MainActivity extends AppCompatActivity
                         LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
                         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                         map.animateCamera(CameraUpdateFactory.zoomTo(15));
+                        setSourceTextMyAddress();
                         flag=true;
                     }
                 }
@@ -339,7 +344,8 @@ public class MainActivity extends AppCompatActivity
             String address = geocodedAddresses.get(0).getAddressLine(0);
             String area=geocodedAddresses.get(0).getSubLocality();
             myArea=area;
-            searchField1.setHint(address);
+            searchBar0.setText(area);
+            searchBar0.setPlaceHolder(address.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -372,7 +378,7 @@ public class MainActivity extends AppCompatActivity
                     .position(latLng);
             map.addMarker(options);
     }
-    /*private void addListenersTOSearchBars(){
+    private void addListenersTOSearchBars() {
         searchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
             @Override
             public void onSearchStateChanged(boolean enabled) {
@@ -381,11 +387,12 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSearchConfirmed(CharSequence text) {
                 startSearch(text.toString(), true, null, false);
-                LatLng latLng=null;
-                latLng= getLocationFromAddress(MainActivity.this,text.toString());
-                if(latLng!=null) {
+                LatLng latLng = null;
+                latLng = getLocationFromAddress(MainActivity.this, text.toString());
+                if (latLng != null) {
                     moveCamera(latLng);
                 }
+                Toast.makeText(MainActivity.this,findVehicle.findRoadAlgo(searchBar0.getText().toString(),text.toString()),Toast.LENGTH_SHORT).show();
                 searchBar.clearFocus();
             }
 
@@ -396,8 +403,9 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+    }
         //TextChangeListener
-        searchBar.addTextChangeListener(new TextWatcher() {
+      /*  searchBar.addTextChangeListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 

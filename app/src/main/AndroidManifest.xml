@@ -41,6 +41,8 @@
         <activity
             android:name=".TrainListActivity"
             android:label="Train" />
+        <activity android:name=".FindVehicle">
+        </activity>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"

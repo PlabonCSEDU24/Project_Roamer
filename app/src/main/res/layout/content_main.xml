@@ -102,33 +102,35 @@
             android:layout_height="2dp"
             android:background="@color/quantum_grey300"/>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/source_field"
+        <com.mancj.materialsearchbar.MaterialSearchBar
+            style="@style/MaterialSearchBarLight"
+            app:mt_speechMode="false"
+            app:mt_placeholder="source"
+            android:fontFamily="@fonts/roboto"
+            app:mt_searchIconDrawable="@drawable/ic_my_location"
+            app:mt_maxSuggestionsCount="10"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:textColor="@color/colorPrimaryDark"
-            android:hint="source"
-            android:fontFamily="@font/roboto_medium"
-            android:textFontWeight="900"
-            android:textAlignment="viewStart"
-            android:paddingLeft="20dp"
-            android:background="?selectableItemBackground"/>
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/destination_field"
+            android:layout_height="wrap_content"
+            android:id="@+id/search_bar_1"
+            />
+
+        <com.mancj.materialsearchbar.MaterialSearchBar
+            style="@style/MaterialSearchBarLight"
+            app:mt_speechMode="false"
+            app:mt_placeholder="destination"
+            android:fontFamily="@fonts/roboto"
+            app:mt_maxSuggestionsCount="10"
+            app:mt_searchIconDrawable="@drawable/ic_place_black"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:textColor="@color/colorPrimaryDark"
-            android:hint="destination"
-            android:fontFamily="@font/roboto_medium"
-            android:textFontWeight="900"
-            android:textAlignment="viewStart"
-            android:paddingLeft="20dp"
-            android:background="?selectableItemBackground"/>
+            android:layout_height="wrap_content"
+            android:id="@+id/search_bar_2"
+            />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:background="@color/quantum_grey300"/>
         <ListView
+            android:id="@+id/queryListView"
             android:layout_width="match_parent"
             android:layout_height="260dp">
 

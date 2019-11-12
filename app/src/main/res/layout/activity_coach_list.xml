@@ -8,55 +8,12 @@ tools:context=".CoachListActivity"
 android:orientation="vertical"
     android:background="@color/quantum_white_100"
     >
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:elevation="6dp">
-        <LinearLayout
-            android:layout_marginTop="26dp"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:orientation="vertical">
-        </LinearLayout>
 
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/quantum_grey300"/>
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/source_field"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:textColor="@color/colorPrimaryDark"
-        android:hint="source"
-        android:fontFamily="@font/roboto_medium"
-        android:textFontWeight="900"
-        android:textAlignment="viewStart"
-        android:paddingLeft="20dp"
-        android:background="?selectableItemBackground"/>
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/destination_field"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:textColor="@color/colorPrimaryDark"
-        android:hint="destination"
-        android:fontFamily="@font/roboto_medium"
-        android:textFontWeight="900"
-        android:textAlignment="viewStart"
-        android:paddingLeft="20dp"
-        android:background="?selectableItemBackground"/>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/quantum_grey300"/>
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="260dp">
 
-    </ListView>
+
+
+
 
 
 </LinearLayout>
