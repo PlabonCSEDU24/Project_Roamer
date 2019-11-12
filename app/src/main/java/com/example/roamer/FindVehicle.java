@@ -1,8 +1,8 @@
 package com.example.roamer;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,7 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.Vector;
 
-public class FindVehicle extends AppCompatActivity {
+public class FindVehicle  {
+    Context context;
     busList busList;
     int routeFound=0;
     int leangth=150;
@@ -21,11 +22,10 @@ public class FindVehicle extends AppCompatActivity {
     ArrayList<String> stoppageList=new ArrayList<>();
     String[] nodeColor=new String[leangth];
     ArrayList<String> stoppageInRoad=new ArrayList<>();
+    int[] placeIds=new int[leangth];
    // ArrayList<Integer>busIDs=new ArrayList<>();
-
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    FindVehicle(Context context){
+        this.context=context;
     }
     void ini(){
         for(int i=0;i<leangth;i++){
@@ -43,18 +43,25 @@ public class FindVehicle extends AppCompatActivity {
 
         }
     }
-    String findRoadAlgo(String source, String Destination) {
+    public void findRoadAlgo() {
         ini();
         int origin = -1, destination = -1;
         Cursor roadCursor, stoppageCursor;
-        busList = new busList(this);
-
+        busList = new busList(context);
         try {
+            origin = busList.getStoppageId("Motijheel");
+            destination = busList.getStoppageId("Sadarghat");
+        } catch (Exception e) {
+            Toast.makeText(context, "Failed" + e, Toast.LENGTH_SHORT).show();
+        }
+        /*try {
             origin = busList.getStoppageId(source);
             destination = busList.getStoppageId(Destination);
         } catch (Exception e) {
 
         }
+
+         */
         stoppageCursor = busList.getStoppage();
         roadCursor = busList.displayRoadData();
         while (stoppageCursor.moveToNext()) {
@@ -81,14 +88,7 @@ public class FindVehicle extends AppCompatActivity {
         setValue();
         routeFound=0;
         dfs(origin,destination);
-       // prnt(destination);
-        String res="hoyNai";
-        try{
-            res=roadId[destination][parent[destination]].get(0).toString();
-        }catch (Exception e){}
-
-        return res;
-
+        prnt(destination);
 
     }
     void setValue(){
@@ -124,19 +124,26 @@ public class FindVehicle extends AppCompatActivity {
         }
     }
 
+
     void prnt(int des){
-       /* while(i<leangth){
+        int i=0;
+        while(i<leangth){
+            //Toast.makeText(this,stoppageList.get(des), Toast.LENGTH_SHORT).show();
             stoppageInRoad.add(stoppageList.get(des)); ///This contains all stoppage of user's desired route in reverse order;
+            placeIds[i]=des;
             des=parent[des];
             i++;
             if(des==-1)
                 return;
-
-        */
-      // int len=roadId[des][parent[des]].size();
-      // for(int i=0;i<len;i++){
-          // busIDs.add(roadId[des][parent[des]].get(0));
-     //  }
         }
     }
-
+    ArrayList<String> getStoppageInRoad(){
+        return stoppageInRoad;
+    }
+    Vector<Integer>[][] getRoadID(){
+        return roadId;
+    }
+    int[] getPlaceId(){
+        return placeIds;
+    }
+}

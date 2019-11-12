@@ -85,6 +85,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
@@ -154,12 +155,13 @@ public class MainActivity extends AppCompatActivity
         findVehicleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                layouta.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
-                searchBar.requestFocus();
+                print();
+                //layouta.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                //searchBar.requestFocus();
             }
         });
 
-        findVehicle=new FindVehicle();
+
 
     }
 
@@ -386,13 +388,29 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onSearchConfirmed(CharSequence text) {
+                Vector<Integer>[][]roadId;
+                ArrayList<String> stoppageInRoad;
+                int [] placeIds;
                 startSearch(text.toString(), true, null, false);
                 LatLng latLng = null;
                 latLng = getLocationFromAddress(MainActivity.this, text.toString());
                 if (latLng != null) {
                     moveCamera(latLng);
                 }
-                Toast.makeText(MainActivity.this,findVehicle.findRoadAlgo(searchBar0.getText().toString(),text.toString()),Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this,findVehicle.findRoadAlgo(searchBar0.getText().toString(),text.toString()),Toast.LENGTH_SHORT).show();
+                /*findVehicle.findRoadAlgo();
+                roadId=findVehicle.getRoadID();
+                stoppageInRoad=findVehicle.getStoppageInRoad();
+                placeIds=findVehicle.getPlaceId();
+                for(int i=stoppageInRoad.size();i>=0;i--){
+                    try{
+                        Toast.makeText(this, stoppageInRoad.get(i)+"\n"+roadId[i][i-1].get(0), Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        Toast.makeText(this, "Finished", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                 */
                 searchBar.clearFocus();
             }
 
@@ -456,6 +474,24 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(this, "copy hoy nai", Toast.LENGTH_SHORT).show();
         }
         databaseHelper=new busList(this);
+    }
+    void print(){
+        findVehicle=new FindVehicle(this);
+        Vector<Integer>[][]roadId;
+        ArrayList<String> stoppageInRoad;
+        int [] placeIds;
+        findVehicle.findRoadAlgo();
+        roadId=findVehicle.getRoadID();
+        stoppageInRoad=findVehicle.getStoppageInRoad();
+        placeIds=findVehicle.getPlaceId();
+        for(int i=stoppageInRoad.size()-1;i>=0;i--) {
+            try {
+                Toast.makeText(this, stoppageInRoad.get(i)+"->"+stoppageInRoad.get(i-1)+"\nRoad Id "+roadId[placeIds[i-1]][placeIds[i]].get(0), Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(this, "Finished", Toast.LENGTH_SHORT).show();
+            }
+        }
+        Toast.makeText(this, "Suc", Toast.LENGTH_SHORT).show();
     }
     
 }

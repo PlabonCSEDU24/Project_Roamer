@@ -127,6 +127,13 @@ public class TrainListActivity extends AppCompatActivity {
         while(i<leangth){
             Toast.makeText(this,stoppageList.get(des), Toast.LENGTH_SHORT).show();
             stoppageInRoad.add(stoppageList.get(des)); ///This contains all stoppage of user's desired route in reverse order;
+            try {
+                int x=roadId[des][parent[des]].get(0);
+                Toast.makeText(this, "Road Id "+x, Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(this, ""+e, Toast.LENGTH_SHORT).show();
+            }
+
             des=parent[des];
             i++;
             if(des==-1)
