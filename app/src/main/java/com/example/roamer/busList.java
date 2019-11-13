@@ -117,5 +117,10 @@ public class busList extends SQLiteOpenHelper {
         }
         return 0;
     }
+    public Cursor getVehicleNameByRoadID(int id){
+        SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
+        Cursor cursor= sqLiteDatabase.rawQuery("select Vehicle_name from "+tableName1+" where route_id= "+id,null);
+        return cursor;
+    }
 
 }

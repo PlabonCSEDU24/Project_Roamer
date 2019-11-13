@@ -43,14 +43,14 @@ public class FindVehicle  {
 
         }
     }
-    public void findRoadAlgo() {
+    public void findRoadAlgo(String src,String dest) {
         ini();
         int origin = -1, destination = -1;
         Cursor roadCursor, stoppageCursor;
         busList = new busList(context);
         try {
-            origin = busList.getStoppageId("Motijheel");
-            destination = busList.getStoppageId("Sadarghat");
+            origin = busList.getStoppageId(src);
+            destination = busList.getStoppageId(dest);
         } catch (Exception e) {
             Toast.makeText(context, "Failed" + e, Toast.LENGTH_SHORT).show();
         }

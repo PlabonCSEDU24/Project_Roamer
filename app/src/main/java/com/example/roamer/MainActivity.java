@@ -68,13 +68,17 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.apache.log4j.chainsaw.Main;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -106,10 +110,11 @@ public class MainActivity extends AppCompatActivity
 
     Button findVehicleButton;
     Button slideUpButton;
-    SlidingUpPanelLayout layouta;
+    SlidingUpPanelLayout slidingUpPanel;
     Toolbar toolbar;
     com.mancj.materialsearchbar.MaterialSearchBar searchBar0,searchBar;
     FindVehicle findVehicle;
+    ListView queryResultListView;
 
 
     @Override
@@ -150,14 +155,14 @@ public class MainActivity extends AppCompatActivity
         addListenersTOSearchBars();
 
         //:::::::::::::::::::::::::::::::sliding up panel:::::::::::::::::::::::::::::::::::
-        layouta = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
+        slidingUpPanel = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
         findVehicleButton=(Button)findViewById(R.id.findTransportButton);
+        queryResultListView=(ListView)findViewById(R.id.queryResultList);
         findVehicleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                print();
-                //layouta.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
-                //searchBar.requestFocus();
+                slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                searchBar.requestFocus();
             }
         });
 
@@ -230,7 +235,7 @@ public class MainActivity extends AppCompatActivity
                 Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
                 String shareBody = "\nhttps://github.com/PlabonCSEDU24/Project_Roamer\n";
-                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Let me share an useful apps:\n");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Let me share an useful app:\n");
                 sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
                 startActivity(Intent.createChooser(sharingIntent, "Share via"));
             }
@@ -389,28 +394,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSearchConfirmed(CharSequence text) {
                 Vector<Integer>[][]roadId;
-                ArrayList<String> stoppageInRoad;
-                int [] placeIds;
+                ArrayList<String> resultList;
                 startSearch(text.toString(), true, null, false);
-                LatLng latLng = null;
-                latLng = getLocationFromAddress(MainActivity.this, text.toString());
-                if (latLng != null) {
-                    moveCamera(latLng);
-                }
-                //Toast.makeText(MainActivity.this,findVehicle.findRoadAlgo(searchBar0.getText().toString(),text.toString()),Toast.LENGTH_SHORT).show();
-                /*findVehicle.findRoadAlgo();
-                roadId=findVehicle.getRoadID();
-                stoppageInRoad=findVehicle.getStoppageInRoad();
-                placeIds=findVehicle.getPlaceId();
-                for(int i=stoppageInRoad.size();i>=0;i--){
-                    try{
-                        Toast.makeText(this, stoppageInRoad.get(i)+"\n"+roadId[i][i-1].get(0), Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-                        Toast.makeText(this, "Finished", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                 */
+                findVehicles(searchBar0.getText().toString(),text.toString());
                 searchBar.clearFocus();
             }
 
@@ -475,23 +461,36 @@ public class MainActivity extends AppCompatActivity
         }
         databaseHelper=new busList(this);
     }
-    void print(){
+    void findVehicles(String source,String destination){
+
         findVehicle=new FindVehicle(this);
         Vector<Integer>[][]roadId;
         ArrayList<String> stoppageInRoad;
+        ArrayList<String> resultList=new ArrayList<>();
         int [] placeIds;
-        findVehicle.findRoadAlgo();
+        findVehicle.findRoadAlgo(source,destination);
         roadId=findVehicle.getRoadID();
         stoppageInRoad=findVehicle.getStoppageInRoad();
         placeIds=findVehicle.getPlaceId();
-        for(int i=stoppageInRoad.size()-1;i>=0;i--) {
-            try {
-                Toast.makeText(this, stoppageInRoad.get(i)+"->"+stoppageInRoad.get(i-1)+"\nRoad Id "+roadId[placeIds[i-1]][placeIds[i]].get(0), Toast.LENGTH_SHORT).show();
+
+        for(int i=stoppageInRoad.size()-1;i>0;i--) {
+             try {
+               // Toast.makeText(this, stoppageInRoad.get(i)+"->"+stoppageInRoad.get(i-1)+"\nRoad Id "+roadId[placeIds[i-1]][placeIds[i]].get(0), Toast.LENGTH_SHORT).show();
+                 Cursor cursor=databaseHelper.getVehicleNameByRoadID(roadId[placeIds[i-1]][placeIds[i]].get(0));
+                 while(cursor.moveToNext()) {
+                     if(!resultList.contains(cursor.getString(0))){
+                         resultList.add(cursor.getString(0));
+                     }
+                 }
+
             } catch (Exception e) {
-                Toast.makeText(this, "Finished", Toast.LENGTH_SHORT).show();
+               Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
             }
         }
-        Toast.makeText(this, "Suc", Toast.LENGTH_SHORT).show();
+        if(!resultList.isEmpty()) {
+            ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.simple_list_item, resultList);
+            queryResultListView.setAdapter(adapter);
+        }
     }
     
 }
