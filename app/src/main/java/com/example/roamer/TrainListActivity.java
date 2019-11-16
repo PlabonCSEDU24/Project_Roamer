@@ -55,10 +55,16 @@ public class TrainListActivity extends AppCompatActivity {
 
         try {
             origin = busList.getStoppageId("Kallyanpur");
-            destination = busList.getStoppageId("Sadarghat");
+            destination = busList.getStoppageId("GPO");
         } catch (Exception e) {
             Toast.makeText(this, "Failed" + e, Toast.LENGTH_SHORT).show();
         }
+        int x=directRoad(origin,destination);
+        if (x == -1) {
+            Toast.makeText(this, "No direct route", Toast.LENGTH_SHORT).show();
+        }
+        else
+            Toast.makeText(this, "Direct id : "+x, Toast.LENGTH_SHORT).show();
         stoppageCursor = busList.getStoppage();
         roadCursor = busList.displayRoadData();
         while (stoppageCursor.moveToNext()) {
@@ -125,13 +131,13 @@ public class TrainListActivity extends AppCompatActivity {
     void prnt(int des){
         int i=0;
         while(i<leangth){
-            Toast.makeText(this,stoppageList.get(des), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this,stoppageList.get(des), Toast.LENGTH_SHORT).show();
             stoppageInRoad.add(stoppageList.get(des)); ///This contains all stoppage of user's desired route in reverse order;
             try {
                 int x=roadId[des][parent[des]].get(0);
-                Toast.makeText(this, "Road Id "+x, Toast.LENGTH_SHORT).show();
+               // Toast.makeText(this, "Road Id "+x, Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
-                Toast.makeText(this, ""+e, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, ""+e, Toast.LENGTH_SHORT).show();
             }
 
             des=parent[des];
@@ -139,5 +145,18 @@ public class TrainListActivity extends AppCompatActivity {
             if(des==-1)
                 return;
         }
+    }
+    int directRoad(int origin,int des){
+        Cursor originCursor=busList.findDirectRoad(origin);
+        Cursor desCursor=busList.findDirectRoad(des);
+        while(originCursor.moveToNext()){
+            while(desCursor.moveToNext()){
+                if(Integer.parseInt(originCursor.getString(0))==Integer.parseInt(desCursor.getString(0))){
+                    return Integer.parseInt(originCursor.getString(0));
+                }
+            }
+            desCursor.moveToFirst();
+        }
+        return -1;
     }
 }

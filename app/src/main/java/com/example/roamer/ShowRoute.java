@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -69,7 +70,7 @@ public class ShowRoute extends AppCompatActivity implements OnMapReadyCallback, 
         mMap.addMarker(place2);
         LatLng origin=new LatLng(23.728014,90.400323);
         LatLng destination=new LatLng(23.755613,90.368591);
-        getRoute();
+        routeByPolylineOption();
 
 
     }
@@ -133,17 +134,6 @@ public class ShowRoute extends AppCompatActivity implements OnMapReadyCallback, 
 
     }
 
-    private void getRoute() {
-        Routing routing=new Routing.Builder()
-                .travelMode(AbstractRouting.TravelMode.DRIVING)
-                .withListener(this)
-                .waypoints(stoppageLatLngList)
-                .optimize(true)
-                .alternativeRoutes(true)
-                .key("AIzaSyBMqiUuZn23MmLndhWUX56SKgwV_GA0A8U")
-                .build();
-        routing.execute();
-    }
     private void erasePolylines(){
         for(Polyline lines:polylines){
             lines.remove();
@@ -171,4 +161,17 @@ public class ShowRoute extends AppCompatActivity implements OnMapReadyCallback, 
         }
         return p1;
     }
+    void routeByPolylineOption(){
+        PolylineOptions polylineOptions=new PolylineOptions();
+        polylineOptions.addAll(stoppageLatLngList);
+        polylineOptions.width(10);
+        polylineOptions.color(Color.BLACK);
+        try {
+            mMap.addPolyline(polylineOptions);
+        } catch (Exception e) {
+            Toast.makeText(this, "Route drawing failed", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
 }

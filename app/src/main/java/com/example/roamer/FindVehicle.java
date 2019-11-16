@@ -62,6 +62,12 @@ public class FindVehicle  {
         }
 
          */
+        int x=directRoad(origin,destination);
+        if (x == -1) {
+            Toast.makeText(context, "No direct route", Toast.LENGTH_SHORT).show();
+        }
+        else
+            Toast.makeText(context, "Direct id : "+x, Toast.LENGTH_SHORT).show();
         stoppageCursor = busList.getStoppage();
         roadCursor = busList.displayRoadData();
         while (stoppageCursor.moveToNext()) {
@@ -145,5 +151,18 @@ public class FindVehicle  {
     }
     int[] getPlaceId(){
         return placeIds;
+    }
+    int directRoad(int origin,int des){
+        Cursor originCursor=busList.findDirectRoad(origin);
+        Cursor desCursor=busList.findDirectRoad(des);
+        while(originCursor.moveToNext()){
+            while(desCursor.moveToNext()){
+                if(Integer.parseInt(originCursor.getString(0))==Integer.parseInt(desCursor.getString(0))){
+                    return Integer.parseInt(originCursor.getString(0));
+                }
+            }
+            desCursor.moveToFirst();
+        }
+        return -1;
     }
 }

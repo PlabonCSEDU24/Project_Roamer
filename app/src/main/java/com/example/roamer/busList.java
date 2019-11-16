@@ -122,5 +122,10 @@ public class busList extends SQLiteOpenHelper {
         Cursor cursor= sqLiteDatabase.rawQuery("select Vehicle_name from "+tableName1+" where route_id= "+id,null);
         return cursor;
     }
+    Cursor findDirectRoad(int node){
+        SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
+        Cursor cursor=sqLiteDatabase.rawQuery("select distinct RouteList.route_id from "+tableName2+" where node1 in ("+node+") or node2 in("+node+");",null);
+        return cursor;
+    }
 
 }
