@@ -29,6 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="570dp"
             />
+
         <androidx.cardview.widget.CardView
             android:id="@+id/imgMyLocation"
             android:layout_width="36dp"
@@ -103,45 +104,87 @@
             android:layout_height="2dp"
             android:background="@color/quantum_grey300"/>
 
-        <com.mancj.materialsearchbar.MaterialSearchBar
-            style="@style/MaterialSearchBarLight"
-            app:mt_speechMode="false"
-            app:mt_placeholder="source"
-            android:fontFamily="@fonts/roboto"
-            app:mt_searchIconDrawable="@drawable/ic_my_location"
-            app:mt_maxSuggestionsCount="10"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/search_bar_1"
-            />
-
-        <com.mancj.materialsearchbar.MaterialSearchBar
-            style="@style/MaterialSearchBarLight"
-            app:mt_speechMode="false"
-            app:mt_placeholder="destination"
-            android:fontFamily="@fonts/roboto"
-            app:mt_maxSuggestionsCount="10"
-            app:mt_searchIconDrawable="@drawable/ic_place_black"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/search_bar_2"
-            />
         <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="40dp"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_art"
+                    android:padding="5dp"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginRight="40dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/quantum_grey200">
+                    <AutoCompleteTextView
+                        android:theme="@style/searchBarTheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:id="@+id/search_bar_1"
+                        android:elevation="6dp"
+                        android:hint="source"
+                        android:textCursorDrawable="@color/colorAccent"
+                        android:textColorHint="@color/colorPrimaryDark"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:paddingLeft="20dp"
+                        android:background="?selectableItemBackground"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="6dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="@color/quantum_grey200">
+                    <AutoCompleteTextView
+                        android:theme="@style/searchBarTheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/search_bar_2"
+                        android:textColorHint="@color/colorPrimaryDark"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:elevation="6dp"
+                        android:hint="destination"
+                        android:paddingLeft="20dp"
+                        android:textCursorDrawable="@color/colorAccent"
+                        android:background="?selectableItemBackground"
+                        />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="60dp"
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:background="@color/quantum_grey300"/>
         <ListView
+
             android:id="@+id/queryResultList"
             android:layout_width="match_parent"
             android:layout_height="260dp">
 
         </ListView>
-        <com.uber.sdk.android.rides.RideRequestButton
-            android:id="@+id/uberButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true" />
+
+
+
 
     </LinearLayout>
 

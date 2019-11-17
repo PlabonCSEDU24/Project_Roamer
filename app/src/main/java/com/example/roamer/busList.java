@@ -108,7 +108,7 @@ public class busList extends SQLiteOpenHelper {
     public int getStoppageId(String str){
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
         try {
-            Cursor cursor = sqLiteDatabase.rawQuery("select * from Places where place_name ='"+str+"'", null);
+            Cursor cursor = sqLiteDatabase.rawQuery("select * from Places where UPPER (place_name) like UPPER ('%"+str+"%')", null);
             cursor.moveToNext();
             Toast.makeText(context, cursor.getString(0), Toast.LENGTH_SHORT).show();
             return cursor.getInt(0);

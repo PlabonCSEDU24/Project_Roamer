@@ -34,10 +34,10 @@ public class UberHandler extends AppCompatActivity {
 
         /// get the context by invoking ``getApplicationContext()``, ``getContext()``, ``getBaseContext()`` or ``this`` when in the activity class
         //RideRequestButton requestButton = new RideRequestButton(UberHandler.this);
-        RideRequestButton requestButton=findViewById(R.id.uberButton);
+      //  RideRequestButton requestButton=findViewById(R.id.uberButton);
         // get your layout, for instance:
-        RelativeLayout layout = new RelativeLayout(UberHandler.this);
-        layout.addView(requestButton);
+       // RelativeLayout layout = new RelativeLayout(UberHandler.this);
+        //layout.addView(requestButton);
 
       /* // get the context by invoking ``getApplicationContext()``, ``getContext()``, ``getBaseContext()`` or ``this`` when in the activity class
         RideRequestButton requestButton = new RideRequestButton(MainActivity.this);

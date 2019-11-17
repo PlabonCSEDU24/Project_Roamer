@@ -52,7 +52,7 @@ public class FindVehicle  {
             origin = busList.getStoppageId(src);
             destination = busList.getStoppageId(dest);
         } catch (Exception e) {
-            Toast.makeText(context, "Failed" + e, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "place not found! " + e, Toast.LENGTH_SHORT).show();
         }
         /*try {
             origin = busList.getStoppageId(source);

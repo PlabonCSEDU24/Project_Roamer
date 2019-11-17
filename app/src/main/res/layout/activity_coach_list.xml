@@ -8,8 +8,102 @@ tools:context=".CoachListActivity"
 android:orientation="vertical"
     android:background="@color/quantum_white_100"
     >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:elevation="6dp">
+        <LinearLayout
+            android:layout_marginTop="26dp"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:orientation="vertical">
+        </LinearLayout>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/quantum_grey300"/>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:layout_width="40dp"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_art"
+                android:padding="5dp"/>
+
+        </LinearLayout>
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginRight="40dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/quantum_grey200">
+            <AutoCompleteTextView
+                android:theme="@style/searchBarTheme"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:id="@+id/search_bar_1"
+                android:elevation="6dp"
+                android:hint="source"
+                android:textCursorDrawable="@color/colorAccent"
+                android:textColorHint="@color/colorPrimaryDark"
+                android:textColor="@color/colorPrimaryDark"
+                android:paddingLeft="20dp"
+                android:background="?selectableItemBackground"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="@color/quantum_grey200">
+            <AutoCompleteTextView
+                android:theme="@style/searchBarTheme"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/search_bar_2"
+                android:textColorHint="@color/colorPrimaryDark"
+                android:textColor="@color/colorPrimaryDark"
+                android:elevation="6dp"
+                android:hint="destination"
+                android:paddingLeft="20dp"
+                android:textCursorDrawable="@color/colorAccent"
+                android:background="?selectableItemBackground"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 
+    </LinearLayout>
+    <LinearLayout
+        android:layout_marginTop="60dp"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/quantum_grey300"/>
+    <ListView
+
+        android:id="@+id/queryResultList"
+        android:layout_width="match_parent"
+        android:layout_height="260dp">
+
+    </ListView>
 
 
 

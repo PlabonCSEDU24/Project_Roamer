@@ -68,7 +68,9 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -112,7 +114,7 @@ public class MainActivity extends AppCompatActivity
     Button slideUpButton;
     SlidingUpPanelLayout slidingUpPanel;
     Toolbar toolbar;
-    com.mancj.materialsearchbar.MaterialSearchBar searchBar0,searchBar;
+    AutoCompleteTextView searchBar0,searchBar;
     FindVehicle findVehicle;
     ListView queryResultListView;
 
@@ -150,8 +152,8 @@ public class MainActivity extends AppCompatActivity
         myLocationButton = (androidx.cardview.widget.CardView) findViewById(R.id.imgMyLocation);
 
         /*:::::::::::::::::::::::search::::::::::::::::::::::*/
-        searchBar0=(com.mancj.materialsearchbar.MaterialSearchBar)findViewById(R.id.search_bar_1);
-        searchBar=(com.mancj.materialsearchbar.MaterialSearchBar)findViewById(R.id.search_bar_2);
+        searchBar0=(AutoCompleteTextView) findViewById(R.id.search_bar_1);
+        searchBar=(AutoCompleteTextView) findViewById(R.id.search_bar_2);
         addListenersTOSearchBars();
 
         //:::::::::::::::::::::::::::::::sliding up panel:::::::::::::::::::::::::::::::::::
@@ -166,6 +168,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        //:::::::::::::::::::::::::::::::uber::::::::::::::::::::::::::::::
 
 
     }
@@ -352,7 +355,7 @@ public class MainActivity extends AppCompatActivity
             String area=geocodedAddresses.get(0).getSubLocality();
             myArea=area;
             searchBar0.setText(area);
-            searchBar0.setPlaceHolder(address.toString());
+            searchBar0.setHint(address.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -386,7 +389,26 @@ public class MainActivity extends AppCompatActivity
             map.addMarker(options);
     }
     private void addListenersTOSearchBars() {
-        searchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
+        Cursor cursor=databaseHelper.getStoppage();
+        ArrayList<String> placeNames=new ArrayList<>();
+        while(cursor.moveToNext()){
+            placeNames.add(cursor.getString(1));
+        }
+        ArrayAdapter<String> adapter=new ArrayAdapter<>(this,R.layout.simple_list_item,placeNames);
+        searchBar0.setAdapter(adapter);
+        searchBar.setAdapter(adapter);
+        searchBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View arg1, int pos, long id) {
+                ArrayList<String> resultList;
+                findVehicles(searchBar0.getText().toString(),searchBar.getText().toString());
+                searchBar.clearFocus();
+
+            }
+        });
+
+        /*searchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
             @Override
             public void onSearchStateChanged(boolean enabled) {
             }
@@ -406,8 +428,14 @@ public class MainActivity extends AppCompatActivity
                     searchBar.disableSearch();
                 }
             }
+
+
         });
+        */
+
     }
+
+
         //TextChangeListener
       /*  searchBar.addTextChangeListener(new TextWatcher() {
             @Override
