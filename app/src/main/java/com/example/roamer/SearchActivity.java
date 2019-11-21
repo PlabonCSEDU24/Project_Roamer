@@ -1,34 +1,57 @@
 package com.example.roamer;
-
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
-import android.content.Context;
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
-import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.transition.Slide;
+import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.view.KeyEvent;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity implements OnMapReadyCallback {
+    Geocoder geocoder;
+    List<Address> geocodedAddresses;
     SlidingUpPanelLayout slidingUpPanel;
     AutoCompleteTextView searchBar0;
     AutoCompleteTextView searchBar;
@@ -40,6 +63,13 @@ public class SearchActivity extends AppCompatActivity {
     ArrayList<String> placeNames;
     ArrayList<Integer> stoppageList=new ArrayList<>();
     ArrayList<String> stoppageInRoad=new ArrayList<>();
+    boolean flag=false;
+    private GoogleMap map;
+    Location lastLocation;
+    LocationRequest locationRequest;
+    private FusedLocationProviderClient fusedLocationClient;
+    private androidx.cardview.widget.CardView myLocationButton;
+    private GoogleMap.OnCameraIdleListener onCameraIdleListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +77,16 @@ public class SearchActivity extends AppCompatActivity {
         setAnimation();
         setContentView(R.layout.activity_search);
         slidingUpPanel=findViewById(R.id.sliding_layout1);
-        queryResultListView=findViewById(R.id.queryResultList);;
+        queryResultListView=findViewById(R.id.queryResultList);
         slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         databaseHelper=new DatabaseHelper(this);
         findVehicle=new FindVehicle(this);
         addListenersTOSearchBars();
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment1);
+        mapFragment.getMapAsync(this);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        myLocationButton = (androidx.cardview.widget.CardView) findViewById(R.id.imgMyLocation1);
+        configureCameraIdle();
 
 
     }
@@ -83,13 +118,89 @@ public class SearchActivity extends AppCompatActivity {
 
                 @Override
                 public void onItemClick(AdapterView<?> parent, View arg1, int pos, long id) {
-                    findVehicles(searchBar0.getText().toString(),searchBar.getText().toString());
-                    searchBar.clearFocus();
+                    try{
+                        findVehicles(searchBar0.getText().toString(), searchBar.getText().toString());
+                    }catch(Exception e){
+                        Toast.makeText(SearchActivity.this,"Not Found!",Toast.LENGTH_SHORT).show();
+                        searchBar.clearFocus();
+                    }
 
+                }
+            });
+            searchBar.setOnKeyListener(new View.OnKeyListener() {
+
+                @Override
+                public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
+                    if(arg1==66)
+                        try{
+                        findVehicles(searchBar0.getText().toString(), searchBar.getText().toString());
+                    }catch(Exception e){
+                            Toast.makeText(SearchActivity.this,"Not Found!",Toast.LENGTH_SHORT).show();
+                            searchBar.clearFocus();
+                    }
+                    return true;
                 }
             });
 
     }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        map.setOnCameraIdleListener(onCameraIdleListener);
+        try {
+            boolean success = googleMap.setMapStyle
+                    (MapStyleOptions.loadRawResourceStyle
+                            (this, R.raw.mapstyle));
+            if (!success) {
+                Log.e("MainActivity", "style parsing failed");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e("MainActivity", "Can't find style. Error: ", e);
+        }
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(1000);
+        locationRequest.setFastestInterval(1000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                map.setMyLocationEnabled(true);
+            }
+
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+            LatLng doyelChattar = new LatLng(23.728014, 90.400323);
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(doyelChattar, 11));
+            map.getUiSettings().setMyLocationButtonEnabled(false);
+            myLocationButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    LatLng latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+                    map.animateCamera(cameraUpdate);
+                }
+            });
+        }
+    }
+        LocationCallback locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                for (Location location : locationResult.getLocations()) {
+                    if (getApplicationContext() != null) {
+                        lastLocation = location;
+                        if (!flag) {
+                            //  setSourceTextMyAddress();
+                            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                            map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                            map.animateCamera(CameraUpdateFactory.zoomTo(15));
+                            setSourceTextMyAddress();
+                            flag = true;
+                        }
+                    }
+                }
+            }
+        };
+
 
 
 
@@ -108,7 +219,6 @@ public class SearchActivity extends AppCompatActivity {
 
         for(int i=stoppageInRoad.size()-1;i>0;i--) {
             try {
-                // Toast.makeText(this, stoppageInRoad.get(i)+"->"+stoppageInRoad.get(i-1)+"\nRoad Id "+roadId[placeIds[i-1]][placeIds[i]].get(0), Toast.LENGTH_SHORT).show();
                 Cursor cursor=databaseHelper.getVehicleNameByRoadID(roadId[placeIds[i-1]][placeIds[i]].get(0));
                 while(cursor.moveToNext()) {
                     if(!resultList.contains(cursor.getString(0))){
@@ -175,6 +285,41 @@ public class SearchActivity extends AppCompatActivity {
         intent.putExtra("busName",busName);
         startActivity(intent);
     }
+    private void setSourceTextMyAddress(){
+        geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            geocodedAddresses=geocoder.getFromLocation(lastLocation.getLatitude(),lastLocation.getLongitude(),1);
+            String area=geocodedAddresses.get(0).getSubLocality();
+            searchBar0.setText(area);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void configureCameraIdle() {
+        onCameraIdleListener = new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+
+                LatLng latLng = map.getCameraPosition().target;
+                Geocoder geocoder = new Geocoder(SearchActivity.this);
+
+                try {
+                    geocodedAddresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+                    String area = geocodedAddresses.get(0).getSubLocality();
+                    if (slidingUpPanel.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED)
+                        searchBar.setText(area);
+                }
+
+                 catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
+    }
+
+
+
 
 }
 

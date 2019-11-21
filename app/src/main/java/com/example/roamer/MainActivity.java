@@ -81,8 +81,6 @@ public class MainActivity extends AppCompatActivity
     private List<AutocompletePrediction> predictionList;
 
     DatabaseHelper databaseHelper;
-    Geocoder geocoder;
-    List<Address> geocodedAddresses;
     String myArea;
     Button findVehicleButton;
     Toolbar toolbar;
@@ -263,7 +261,6 @@ public class MainActivity extends AppCompatActivity
                 LatLng latLng = new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
                 map.animateCamera(cameraUpdate);
-                setSourceTextMyAddress();
             }
         });
         //initSearch();
@@ -279,7 +276,6 @@ public class MainActivity extends AppCompatActivity
                         LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
                         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                         map.animateCamera(CameraUpdateFactory.zoomTo(15));
-                        setSourceTextMyAddress();
                         flag=true;
                     }
                 }
@@ -324,23 +320,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void setSourceTextMyAddress(){
-        geocoder = new Geocoder(this, Locale.getDefault());
-        try {
-            geocodedAddresses=geocoder.getFromLocation(lastLocation.getLatitude(),lastLocation.getLongitude(),1);
-            String address = geocodedAddresses.get(0).getAddressLine(0);
-            String area=geocodedAddresses.get(0).getSubLocality();
-            myArea=area;
-            searchBar0.setText(area);
-            searchBar0.setHint(address.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
 
 
-    private LatLng getLocationFromAddress(Context context, String strAddress) {
+   /* private LatLng getLocationFromAddress(Context context, String strAddress) {
         List<Address> address;
         LatLng p1 = null;
 
@@ -364,7 +347,7 @@ public class MainActivity extends AppCompatActivity
             MarkerOptions options = new MarkerOptions()
                     .position(latLng);
             map.addMarker(options);
-    }
+    }*/
 
     private void showRecentSearches(){
         textView=(TextView)findViewById(R.id.textItem);

@@ -36,7 +36,8 @@
         <activity android:name=".RoadListByBus" />
         <activity
             android:name=".BusListActivity"
-            android:label="Local Bus" />
+            android:label="Local Bus"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
         <activity
             android:name=".CoachListActivity"
             android:label="Coach" />

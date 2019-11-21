@@ -17,6 +17,7 @@
         android:background="@android:color/white"
         android:elevation="6dp"
         android:gravity="center_vertical">
+
         <LinearLayout
             android:layout_marginTop="26dp"
 
@@ -50,6 +51,7 @@
                         android:id="@+id/search_bar_1"
                         android:elevation="6dp"
                         android:hint="source"
+                        android:singleLine="true"
                         android:dropDownAnchor="@id/toolbarSearchPage"
                         android:completionThreshold="2"
                         android:textCursorDrawable="@color/colorAccent"
@@ -62,6 +64,7 @@
                         />
 
                 </LinearLayout>
+
 
                 <LinearLayout
                     android:layout_marginTop="10dp"
@@ -78,6 +81,8 @@
                         android:elevation="6dp"
                         android:completionThreshold="2"
                         android:hint="destination"
+                        android:imeOptions="actionSearch"
+                        android:singleLine="true"
                         android:dropDownAnchor="@id/toolbarSearchPage"
                         android:paddingLeft="20dp"
                         android:textCursorDrawable="@color/colorAccent"
@@ -87,6 +92,8 @@
                 </LinearLayout>
 
             </LinearLayout>
+
+
         </LinearLayout>
 
     </androidx.appcompat.widget.Toolbar>
@@ -105,22 +112,22 @@
         <RelativeLayout
             android:id="@+id/visibleContent"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="550dp"
             android:background="@color/quantum_white_100">
             <fragment
-                android:id="@+id/mapFragment"
+                android:id="@+id/mapFragment1"
                 android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="550dp" />
 
             <androidx.cardview.widget.CardView
 
-                android:id="@+id/imgMyLocation"
+                android:id="@+id/imgMyLocation1"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginBottom="16dp"
-                android:layout_alignBottom="@id/mapFragment"
-                android:layout_alignEnd="@id/mapFragment"
+                android:layout_alignBottom="@id/mapFragment1"
+                android:layout_alignEnd="@id/mapFragment1"
                 android:layout_marginRight="16dp"
                 android:clickable="true"
                 android:focusable="true">
@@ -130,12 +137,35 @@
                     android:layout_gravity="center"
                     android:src="@drawable/ic_my_location"/>
             </androidx.cardview.widget.CardView>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_my_location"/>
 
-        </RelativeLayout>
+
+
+    </RelativeLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             >
+            <ImageView
+                android:id="@+id/dropDown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_expand_more_black_24dp"
+                android:layout_gravity="center_horizontal"/>
+
+            <TextView
+                android:id="@+id/dropDownText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="set on map"
+                android:fontFamily="@font/roboto"
+                android:layout_gravity="center_horizontal"
+                />
 
             <ListView
 
@@ -146,9 +176,7 @@
             </ListView>
         </LinearLayout>
 
-
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
-
 
 
 
