@@ -199,11 +199,6 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
                 break;
             }
-            case R.id.uber: {
-                Intent intent = new Intent(this, UberHandler.class);
-                startActivity(intent);
-                break;
-            }
             case R.id.update:{
                 Intent intent = new Intent(this, DataUpdateActivity.class);
                 startActivity(intent);
@@ -321,33 +316,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-
-   /* private LatLng getLocationFromAddress(Context context, String strAddress) {
-        List<Address> address;
-        LatLng p1 = null;
-
-        try {
-            // May throw an IOException
-            address = geocoder.getFromLocationName(strAddress, 1);
-            if (address == null) {
-                return null;
-            }
-
-            Address location = address.get(0);
-            p1 = new LatLng(location.getLatitude(), location.getLongitude());
-
-        } catch (IOException ex) {
-            Toast.makeText(this, "not found!", Toast.LENGTH_SHORT).show();
-        }
-        return p1;
-    }
-    private void moveCamera(LatLng latLng){
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-            MarkerOptions options = new MarkerOptions()
-                    .position(latLng);
-            map.addMarker(options);
-    }*/
 
     private void showRecentSearches(){
         textView=(TextView)findViewById(R.id.textItem);

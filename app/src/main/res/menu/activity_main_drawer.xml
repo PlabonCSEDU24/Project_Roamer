@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:showIn="navigation_view">
+    tools:showIn="navigation_view"
+    >
 
     <item android:title="Transportation List">
         <menu>
@@ -9,7 +10,8 @@
         <item
             android:id="@+id/nav_bus"
             android:icon="@drawable/ic_menu_bus"
-            android:title="@string/menu_bus"/>
+            android:title="@string/menu_bus"
+            />
         <item
             android:id="@+id/nav_coach"
             android:icon="@drawable/ic_menu_bus"
@@ -18,10 +20,6 @@
             android:id="@+id/nav_train"
             android:icon="@drawable/ic_menu_train"
             android:title="@string/menu_train" />
-        <item
-            android:id="@+id/uber"
-            android:icon="@drawable/ic_menu_train"
-            android:title="Uber"/>
     </group>
         </menu>
     </item>
@@ -42,7 +40,10 @@
         <menu>
             <item
                 android:id="@+id/update"
-                android:title="Data Update Request" />
+                android:title="Data Update Request"
+                android:icon="@drawable/ic_system_update_alt_black_24dp"
+
+                />
             <item
                 android:id="@+id/nav_tools"
                 android:icon="@drawable/ic_menu_manage"

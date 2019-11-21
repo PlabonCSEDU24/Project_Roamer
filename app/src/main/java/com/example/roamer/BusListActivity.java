@@ -76,7 +76,6 @@ public class BusListActivity extends AppCompatActivity {
     }
 
     void createNewActivity(String busName){
-        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
         makeStoppageList();
         Intent intent=new Intent(this,RoadListByBus.class);
         intent.putExtra("ara",stoppageInRoad);

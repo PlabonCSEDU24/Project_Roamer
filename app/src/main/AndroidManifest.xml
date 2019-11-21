@@ -20,10 +20,10 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".SearchActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/Theme.AppCompat.NoActionBar">
         </activity>
-        <activity android:name=".DataUpdateActivity" />
-        <activity android:name=".UberHandler" />
+        <activity android:name=".DataUpdateActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -33,11 +33,12 @@
             android:resource="@array/preloaded_fonts" />
 
         <activity android:name=".ShowRoute" />
-        <activity android:name=".RoadListByBus" />
+        <activity android:name=".RoadListByBus"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <activity
             android:name=".BusListActivity"
             android:label="Local Bus"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <activity
             android:name=".CoachListActivity"
             android:label="Coach" />

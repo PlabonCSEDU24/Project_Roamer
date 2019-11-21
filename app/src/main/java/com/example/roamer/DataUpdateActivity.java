@@ -24,7 +24,6 @@ public class DataUpdateActivity extends AppCompatActivity implements View.OnClic
         vehicleTypeEditTextId = findViewById(R.id.vehicleTypeEditTextId);
         routeListEditTextId = findViewById(R.id.routeListEditTextId);
         sendDataButtonId = findViewById(R.id.sendDataButtonId);
-
         sendDataButtonId.setOnClickListener(this);
     }
 

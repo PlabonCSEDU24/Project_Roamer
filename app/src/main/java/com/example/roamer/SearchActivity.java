@@ -1,10 +1,12 @@
 package com.example.roamer;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,12 +23,18 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -42,9 +50,16 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.uber.sdk.android.core.UberSdk;
+import com.uber.sdk.android.rides.RideParameters;
+import com.uber.sdk.android.rides.RideRequestButton;
+import com.uber.sdk.core.auth.Scope;
+import com.uber.sdk.rides.client.ServerTokenSession;
+import com.uber.sdk.rides.client.SessionConfiguration;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -70,12 +85,22 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
     private FusedLocationProviderClient fusedLocationClient;
     private androidx.cardview.widget.CardView myLocationButton;
     private GoogleMap.OnCameraIdleListener onCameraIdleListener;
+    CardView setOnMapButton;
+    ImageView dropDown;
+    TextView dropDownText;
+    RideRequestButton requestButton;
+    LinearLayout layout;
+    SessionConfiguration config;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setAnimation();
         setContentView(R.layout.activity_search);
+        Window window=this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.setStatusBarColor(this.getResources().getColor(R.color.colorPrimaryDark));
         slidingUpPanel=findViewById(R.id.sliding_layout1);
         queryResultListView=findViewById(R.id.queryResultList);
         slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
@@ -87,9 +112,27 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         myLocationButton = (androidx.cardview.widget.CardView) findViewById(R.id.imgMyLocation1);
         configureCameraIdle();
+        configureDropDown();
+        config = new SessionConfiguration.Builder()
+                // mandatory
+                .setClientId("gTCc4H_8dGHZ_mvOX4O2V-48mkY4CqAz")
+                // required for enhanced button features
+                .setServerToken("1VnrfjZENfFgaE9U2_I6YO85ss68_1vx973oq2c5")
+                // required for implicit grant authentication
+                .setRedirectUri("")
+                .setScopes(Arrays.asList(Scope.RIDE_WIDGETS))
+                // optional: set sandbox as operating environment
+                .setEnvironment(SessionConfiguration.Environment.SANDBOX)
+                .build();
+        UberSdk.initialize(config);
+        requestButton = new RideRequestButton(this);
+        layout = (LinearLayout) findViewById(R.id.slider);
+
 
 
     }
+
+
     public void setAnimation(){
         if(Build.VERSION.SDK_INT>20) {
             Slide slide = new Slide();
@@ -111,7 +154,11 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                 placeNames.add(cursor.getString(1));
 
             }
+            searchBar.setDropDownBackgroundResource(R.color.colorPrimaryDark);
+            searchBar0.setDropDownBackgroundResource(R.color.colorPrimaryDark);
+            showSoftKeyboard(searchBar);
             ArrayAdapter<String> items=new ArrayAdapter<>(SearchActivity.this,android.R.layout.simple_list_item_1,placeNames);
+
             searchBar0.setAdapter(items);
             searchBar.setAdapter(items);
             searchBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -120,6 +167,8 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                 public void onItemClick(AdapterView<?> parent, View arg1, int pos, long id) {
                     try{
                         findVehicles(searchBar0.getText().toString(), searchBar.getText().toString());
+                        layout.addView(requestButton);
+                        setRideParams();
                     }catch(Exception e){
                         Toast.makeText(SearchActivity.this,"Not Found!",Toast.LENGTH_SHORT).show();
                         searchBar.clearFocus();
@@ -130,14 +179,22 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
             searchBar.setOnKeyListener(new View.OnKeyListener() {
 
                 @Override
-                public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
-                    if(arg1==66)
-                        try{
-                        findVehicles(searchBar0.getText().toString(), searchBar.getText().toString());
-                    }catch(Exception e){
-                            Toast.makeText(SearchActivity.this,"Not Found!",Toast.LENGTH_SHORT).show();
+                public boolean onKey(View arg0, int arg1, KeyEvent event) {
+                    if (arg1==66) {
+                        try {
+                            findVehicles(searchBar0.getText().toString(), searchBar.getText().toString());
+                            layout.addView(requestButton);
+                            setRideParams();
                             searchBar.clearFocus();
+                        } catch (Exception e) {
+                            Toast.makeText(SearchActivity.this, "Not Found!", Toast.LENGTH_SHORT).show();
+                        }
+
                     }
+                    if(arg1==KeyEvent.KEYCODE_BACK){
+                        finish();
+                    }
+
                     return true;
                 }
             });
@@ -316,6 +373,84 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
             }
         };
+    }
+
+    private void configureDropDown() {
+        setOnMapButton=findViewById(R.id.setOnMapButton);
+        dropDown=findViewById(R.id.dropDown);
+        dropDownText=findViewById(R.id.dropDownText);
+        setOnMapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (slidingUpPanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                    slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                    dropDown.setImageResource(R.drawable.ic_expand_less_black_24dp);
+                    dropDownText.setText("done");
+                    hideSoftKeyboard(searchBar);
+                    hideSoftKeyboard(searchBar0);
+                }
+                else {
+                    slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                    dropDown.setImageResource(R.drawable.ic_expand_more_black_24dp);
+                    dropDownText.setText("set on map");
+                    findVehicles(searchBar0.getText().toString(), searchBar.getText().toString());
+                    hideSoftKeyboard(searchBar);
+                    setRideParams();
+                }
+
+
+            }
+        });
+    }
+    public void showSoftKeyboard(View view) {
+        if (view.requestFocus()) {
+            InputMethodManager imm = (InputMethodManager)
+                    getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null)
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
+    public void hideSoftKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+        }
+    }
+    private void setRideParams() {
+        LatLng pickup=getLocationFromAddress(this,searchBar0.getText().toString()+", dhaka");
+        LatLng drop=getLocationFromAddress(this,searchBar.getText().toString()+", dhaka");
+
+        RideParameters rideParams = new RideParameters.Builder()
+                .setProductId("a1111c8c-c720-46c3-8534-2fcdd730040d")
+                // Required for price estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of dropoff location
+                .setDropoffLocation(
+                        drop.latitude, drop.longitude, "", "")
+                // Required for pickup estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of pickup location
+                .setPickupLocation(pickup.latitude, pickup.longitude, "", "").build();
+        requestButton.setRideParameters(rideParams);
+        ServerTokenSession session = new ServerTokenSession(config);
+        requestButton.setSession(session);
+        requestButton.loadRideInformation();
+    }
+
+    private LatLng getLocationFromAddress(Context context, String strAddress) {
+        List<Address> address;
+        LatLng p1 = null;
+
+        try {
+            // May throw an IOException
+            address = geocoder.getFromLocationName(strAddress, 1);
+            if (address == null) {
+                return null;
+            }
+
+            Address location = address.get(0);
+            p1 = new LatLng(location.getLatitude(), location.getLongitude());
+
+        } catch (IOException ex) {
+            Toast.makeText(this, "not found!", Toast.LENGTH_SHORT).show();
+        }
+        return p1;
     }
 
 
