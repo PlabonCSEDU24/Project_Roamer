@@ -1,9 +1,9 @@
 package com.example.roamer;
 import android.Manifest;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -11,8 +11,6 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.net.Uri;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -33,54 +31,32 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import android.os.Looper;
-import android.text.Editable;
-import android.text.TextPaint;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
-import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
-import com.google.android.libraries.places.api.model.TypeFilter;
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-import com.uber.sdk.android.core.UberSdk;
-import com.uber.sdk.android.rides.RideRequestButton;
-import com.uber.sdk.core.auth.Scope;
-import com.uber.sdk.rides.client.SessionConfiguration;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.apache.log4j.chainsaw.Main;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -88,7 +64,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -105,19 +80,19 @@ public class MainActivity extends AppCompatActivity
     private PlacesClient placesClient;
     private List<AutocompletePrediction> predictionList;
 
-    busList databaseHelper;
+    DatabaseHelper databaseHelper;
     Geocoder geocoder;
     List<Address> geocodedAddresses;
     String myArea;
-
     Button findVehicleButton;
-    Button slideUpButton;
-    SlidingUpPanelLayout slidingUpPanel;
     Toolbar toolbar;
     AutoCompleteTextView searchBar0,searchBar;
     FindVehicle findVehicle;
-    ListView queryResultListView;
-
+    TextView textView;
+    Cursor busCursor,roadCursor;
+    Adapter adapter;
+    ArrayList<Integer> stoppageList=new ArrayList<>();
+    ArrayList<String> stoppageInRoad=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,8 +117,8 @@ public class MainActivity extends AppCompatActivity
         window.setStatusBarColor(Color.TRANSPARENT);
 
         /*:::::::::::::::::::::::ship previously saved database with application::::::::::::::::::::::*/
-
         shipDatabase();
+        databaseHelper=new DatabaseHelper(this);
 
         /*:::::::::::::::::::::::map api things::::::::::::::::::::::*/
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
@@ -152,23 +127,25 @@ public class MainActivity extends AppCompatActivity
         myLocationButton = (androidx.cardview.widget.CardView) findViewById(R.id.imgMyLocation);
 
         /*:::::::::::::::::::::::search::::::::::::::::::::::*/
-        searchBar0=(AutoCompleteTextView) findViewById(R.id.search_bar_1);
-        searchBar=(AutoCompleteTextView) findViewById(R.id.search_bar_2);
-        addListenersTOSearchBars();
 
-        //:::::::::::::::::::::::::::::::sliding up panel:::::::::::::::::::::::::::::::::::
-        slidingUpPanel = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
         findVehicleButton=(Button)findViewById(R.id.findTransportButton);
-        queryResultListView=(ListView)findViewById(R.id.queryResultList);
         findVehicleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
-                searchBar.requestFocus();
+                //slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                //searchBar.requestFocus();
+                Intent intent=new Intent(MainActivity.this,SearchActivity.class);
+                if(Build.VERSION.SDK_INT>20){
+                    ActivityOptions options =
+                            ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
+                    startActivity(intent,options.toBundle());
+                }else {
+                    startActivity(intent);
+                }
             }
         });
 
-        //:::::::::::::::::::::::::::::::uber::::::::::::::::::::::::::::::
+        showRecentSearches();
 
 
     }
@@ -388,84 +365,26 @@ public class MainActivity extends AppCompatActivity
                     .position(latLng);
             map.addMarker(options);
     }
-    private void addListenersTOSearchBars() {
-        Cursor cursor=databaseHelper.getStoppage();
-        ArrayList<String> placeNames=new ArrayList<>();
-        while(cursor.moveToNext()){
-            placeNames.add(cursor.getString(1));
-        }
-        ArrayAdapter<String> adapter=new ArrayAdapter<>(this,R.layout.simple_list_item,placeNames);
-        searchBar0.setAdapter(adapter);
-        searchBar.setAdapter(adapter);
-        searchBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+    private void showRecentSearches(){
+        textView=(TextView)findViewById(R.id.textItem);
+        RecyclerView recentSearchesListView=(RecyclerView)findViewById(R.id.recentSearchList);
+        busCursor = databaseHelper.getRecentSearches();
+        recentSearchesListView.setLayoutManager(new LinearLayoutManager(this));
+        adapter=new Adapter(this, busCursor);
+        recentSearchesListView.setAdapter(adapter);
+        adapter.setOnItemClickListener(new Adapter.clickListener(){
 
             @Override
-            public void onItemClick(AdapterView<?> parent, View arg1, int pos, long id) {
-                ArrayList<String> resultList;
-                findVehicles(searchBar0.getText().toString(),searchBar.getText().toString());
-                searchBar.clearFocus();
-
+            public void onItemClick(int position, View view,int roadId,String busName) {
+                getStoppageData(roadId);
+                createNewActivity(busName);
             }
         });
 
-        /*searchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
-            @Override
-            public void onSearchStateChanged(boolean enabled) {
-            }
-
-            @Override
-            public void onSearchConfirmed(CharSequence text) {
-                Vector<Integer>[][]roadId;
-                ArrayList<String> resultList;
-                startSearch(text.toString(), true, null, false);
-                findVehicles(searchBar0.getText().toString(),text.toString());
-                searchBar.clearFocus();
-            }
-
-            @Override
-            public void onButtonClicked(int buttonCode) {
-                if (buttonCode == MaterialSearchBar.BUTTON_BACK) {
-                    searchBar.disableSearch();
-                }
-            }
-
-
-        });
-        */
 
     }
 
-
-        //TextChangeListener
-      /*  searchBar.addTextChangeListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                /*Toast.makeText(MainActivity.this,charSequence.toString(),Toast.LENGTH_LONG).show();
-                Cursor cursor=databaseHelper.autocompleteQuery(charSequence.toString());
-                List<String> suggestionList = new ArrayList<>();
-                while(cursor.moveToNext()){
-                    suggestionList.add(cursor.getString(0));
-                }
-                Toast.makeText(MainActivity.this,suggestionList.get(0).toString(),Toast.LENGTH_LONG).show();
-                searchBar.updateLastSuggestions(suggestionList);
-                searchBar.showSuggestionsList();
-
-
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-    }
-    */
     private void shipDatabase(){
         String appDataPath = this.getApplicationInfo().dataDir;
         File dbFolder = new File(appDataPath + "/databases");//Make sure the /databases folder exists
@@ -487,39 +406,46 @@ public class MainActivity extends AppCompatActivity
         } catch (IOException e) {
             Toast.makeText(this, "copy hoy nai", Toast.LENGTH_SHORT).show();
         }
-        databaseHelper=new busList(this);
     }
-    void findVehicles(String source,String destination){
-
-        findVehicle=new FindVehicle(this);
-        Vector<Integer>[][]roadId;
-        ArrayList<String> stoppageInRoad;
-        ArrayList<String> resultList=new ArrayList<>();
-        int [] placeIds;
-        findVehicle.findRoadAlgo(source,destination);
-        roadId=findVehicle.getRoadID();
-        stoppageInRoad=findVehicle.getStoppageInRoad();
-        placeIds=findVehicle.getPlaceId();
-
-        for(int i=stoppageInRoad.size()-1;i>0;i--) {
-             try {
-               // Toast.makeText(this, stoppageInRoad.get(i)+"->"+stoppageInRoad.get(i-1)+"\nRoad Id "+roadId[placeIds[i-1]][placeIds[i]].get(0), Toast.LENGTH_SHORT).show();
-                 Cursor cursor=databaseHelper.getVehicleNameByRoadID(roadId[placeIds[i-1]][placeIds[i]].get(0));
-                 while(cursor.moveToNext()) {
-                     if(!resultList.contains(cursor.getString(0))){
-                         resultList.add(cursor.getString(0));
-                     }
-                 }
-
-            } catch (Exception e) {
-               Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+    void getStoppageData(int roadId){
+        roadCursor= databaseHelper.displayRoadData();
+        stoppageList.clear();
+        int firstStoppage=0;
+        while(roadCursor.moveToNext()){
+            if(Integer.parseInt(roadCursor.getString(1))==roadId){
+                if(firstStoppage==0){
+                    stoppageList.add(Integer.parseInt(roadCursor.getString(2)));
+                    firstStoppage=1;
+                }
+                stoppageList.add(Integer.parseInt(roadCursor.getString(3)));
             }
-        }
-        if(!resultList.isEmpty()) {
-            ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.simple_list_item, resultList);
-            queryResultListView.setAdapter(adapter);
+            else if(Integer.parseInt(roadCursor.getString(1))>roadId)
+                break;
         }
     }
-    
+    void makeStoppageList(){
+        Cursor cursor= databaseHelper.getStoppage();
+        int n=stoppageList.size();
+        ArrayList<String> stoppage=new ArrayList<>();
+        stoppageInRoad.clear();
+        while(cursor.moveToNext()){
+            stoppage.add(cursor.getString(1));
+        }
+        for(int i=0;i<n;i++){
+            String str=stoppage.get(stoppageList.get(i));
+            stoppageInRoad.add(str);
+        }
+    }
+
+    void createNewActivity(String busName){
+        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
+        makeStoppageList();
+        Intent intent=new Intent(this,RoadListByBus.class);
+        intent.putExtra("ara",stoppageInRoad);
+        intent.putExtra("busName",busName);
+        startActivity(intent);
+    }
+
+
 }
 

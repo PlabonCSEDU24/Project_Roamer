@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-public class busList extends SQLiteOpenHelper {
+public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int version=4;
     private static final String databaseName="BusDatabase.sqlite";
     public static String APP_DATA_PATH="";
@@ -19,6 +19,7 @@ public class busList extends SQLiteOpenHelper {
     private static final String tableName1="VehicleList";
     private static final String tableName2="RouteList";
     private static final String tableName3="Places";
+    private static final String tableName4="recent_searches";
     private static final String busID="Vahicle_ID";
     private static final String busName="Vahicle_Name";
     private static final String roadID="RoadID";
@@ -29,12 +30,13 @@ public class busList extends SQLiteOpenHelper {
             " Stoppage2 int, primary key(roadId,Stoppage1,Stoppage2), " +
             "foreign key(Stoppage1) references "+tableName3+"(stoppageId),foreign key(Stoppage2) references "+tableName3+"(stoppageId)); ";
     private static final String createStoppageIndexingTable="create table "+tableName3+"( stoppageId INTEGER primary key autoincrement, stoppage varchar(20) unique);";
+    private static final String createRecentSearchesTable="CREATE TABLE `recent_searches` (\n" + "\t`vehicle_id`\tINTEGER\n" + ");";
 
     private static final String dropTable1="drop table if exists "+tableName1;
     private static final String dropTable2="drop table if exists "+tableName2;
     private static final String dropTable3="drop table if exists "+tableName3;
     Context context;
-   public busList(@Nullable Context context) {
+   public DatabaseHelper(@Nullable Context context) {
         super(context, databaseName, null, version);
         APP_DATA_PATH=context.getApplicationInfo().dataDir;
         this.context=context;
@@ -59,6 +61,7 @@ public class busList extends SQLiteOpenHelper {
             db.execSQL(createStoppageIndexingTable);
             db.execSQL(createRoadTable);
             db.execSQL(createBusTable);
+            db.execSQL(createRecentSearchesTable);
             Toast.makeText(context, "Table", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(context, ""+e, Toast.LENGTH_SHORT).show();
@@ -100,11 +103,8 @@ public class busList extends SQLiteOpenHelper {
         Cursor cursor= sqLiteDatabase.rawQuery("select * from "+tableName3 ,null);
         return cursor;
     }
-    public Cursor autocompleteQuery(String str){
-        SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
-        Cursor cursor= sqLiteDatabase.rawQuery("select Bus_Name from "+tableName1+" where Bus_Name like '%"+str+"%'" ,null);
-        return cursor;
-    }
+
+
     public int getStoppageId(String str){
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
         try {
@@ -119,13 +119,18 @@ public class busList extends SQLiteOpenHelper {
     }
     public Cursor getVehicleNameByRoadID(int id){
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
-        Cursor cursor= sqLiteDatabase.rawQuery("select Vehicle_name from "+tableName1+" where route_id= "+id,null);
+        Cursor cursor= sqLiteDatabase.rawQuery("select Vehicle_name,route_id from "+tableName1+" where route_id= "+id,null);
         return cursor;
     }
     Cursor findDirectRoad(int node){
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
         Cursor cursor=sqLiteDatabase.rawQuery("select distinct RouteList.route_id from "+tableName2+" where node1 in ("+node+") or node2 in("+node+");",null);
         return cursor;
+    }
+    Cursor getRecentSearches(){
+        SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
+        Cursor cursor=sqLiteDatabase.rawQuery("select * from VehicleList natural join recent_searches;",null);
+        return  cursor;
     }
 
 }

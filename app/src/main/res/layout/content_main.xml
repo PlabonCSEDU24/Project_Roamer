@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,185 +8,85 @@
     app:umanoDragView="@id/visibleContent"
     tools:showIn="@layout/app_bar_main"
     android:orientation="vertical"
-    android:layout_gravity="bottom"
-    android:gravity="bottom"
-    app:umanoInitialState="hidden"
-    app:umanoPanelHeight="0dp"
-    android:maxHeight="560dp"
-    xmlns:sothree="http://schemas.android.com/apk/res-auto"
     android:id="@+id/sliding_layout">
     <RelativeLayout
         android:id="@+id/visibleContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/quantum_white_100"
-         >
-
-        <!-- always visible content -->
+        android:background="@color/quantum_white_100">
         <fragment
             android:id="@+id/mapFragment"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="570dp"
-            />
+            android:layout_height="540dp" />
 
         <androidx.cardview.widget.CardView
+            android:layout_above="@+id/bottomSheet"
             android:id="@+id/imgMyLocation"
             android:layout_width="36dp"
             android:layout_height="36dp"
+            android:layout_marginBottom="16dp"
+            android:layout_alignEnd="@id/mapFragment"
+            android:layout_marginRight="16dp"
             android:clickable="true"
-            android:focusable="true"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="520dp"
-            android:layout_marginLeft="326dp">
+            android:focusable="true">
             <ImageView
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_my_location"/>
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_my_location"/>
         </androidx.cardview.widget.CardView>
         <LinearLayout
             android:clickable="false"
+            android:id="@+id/bottomSheet"
             android:layout_below="@id/mapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/quantum_white_100"
-            android:orientation="horizontal">
+            android:background="@color/colorPrimaryDark"
+            android:orientation="vertical">
             <LinearLayout
-                android:layout_below="@id/mapFragment"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
-                android:layout_gravity="center"
+                android:layout_gravity="center_horizontal"
                 android:background="@color/quantum_grey300"
-                android:orientation="horizontal">
+                android:orientation="vertical">
                 <Button
                     android:id="@+id/findTransportButton"
                     android:layout_width="match_parent"
                     android:layout_height="46dp"
+                    android:textSize="20dp"
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:text="find transport"
                     android:textColor="@color/colorPrimaryDark"
                     android:fontFamily="@font/roboto_medium"
-                    android:textFontWeight="100"
                     android:background="?selectableItemBackground"/>
             </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="recent searches"
+                android:textColor="@color/quantum_grey" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:id="@+id/recentSearchList"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:scrollbars="vertical"
+                android:scrollbarSize="2dp"
+                android:scrollbarThumbVertical="@color/colorPrimaryDark"
+                android:scrollbarAlwaysDrawVerticalTrack="true"
+                android:scrollbarTrackVertical="@color/colorAccent"
+
+                />
 
         </LinearLayout>
 
     </RelativeLayout>
-
-
-    <LinearLayout
-        android:id="@+id/slider"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/quantum_white_100"
-        >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:elevation="6dp">
-            <LinearLayout
-                android:layout_marginTop="26dp"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:orientation="vertical">
-            </LinearLayout>
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/quantum_grey300"/>
-
-        <LinearLayout
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:orientation="horizontal">
-            <LinearLayout
-                android:layout_marginTop="10dp"
-                android:layout_width="40dp"
-                android:layout_height="match_parent">
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_art"
-                    android:padding="5dp"/>
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_marginTop="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginRight="40dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/quantum_grey200">
-                    <AutoCompleteTextView
-                        android:theme="@style/searchBarTheme"
-                        android:layout_width="match_parent"
-                        android:layout_height="30dp"
-                        android:id="@+id/search_bar_1"
-                        android:elevation="6dp"
-                        android:hint="source"
-                        android:textCursorDrawable="@color/colorAccent"
-                        android:textColorHint="@color/colorPrimaryDark"
-                        android:textColor="@color/colorPrimaryDark"
-                        android:paddingLeft="20dp"
-                        android:background="?selectableItemBackground"
-                        />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_marginTop="6dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:background="@color/quantum_grey200">
-                    <AutoCompleteTextView
-                        android:theme="@style/searchBarTheme"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:id="@+id/search_bar_2"
-                        android:textColorHint="@color/colorPrimaryDark"
-                        android:textColor="@color/colorPrimaryDark"
-                        android:elevation="6dp"
-                        android:hint="destination"
-                        android:paddingLeft="20dp"
-                        android:textCursorDrawable="@color/colorAccent"
-                        android:background="?selectableItemBackground"
-                        />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_marginTop="60dp"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/quantum_grey300"/>
-        <ListView
-
-            android:id="@+id/queryResultList"
-            android:layout_width="match_parent"
-            android:layout_height="260dp">
-
-        </ListView>
-
-
-
-
-    </LinearLayout>
-
-
-</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+</LinearLayout>

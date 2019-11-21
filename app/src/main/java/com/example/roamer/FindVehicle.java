@@ -2,17 +2,14 @@ package com.example.roamer;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Bundle;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.Vector;
 
 public class FindVehicle  {
     Context context;
-    busList busList;
+    DatabaseHelper DatabaseHelper;
     int routeFound=0;
     int leangth=150;
     Vector<Integer>[] adjList=new Vector[leangth];
@@ -47,16 +44,16 @@ public class FindVehicle  {
         ini();
         int origin = -1, destination = -1;
         Cursor roadCursor, stoppageCursor;
-        busList = new busList(context);
+        DatabaseHelper = new DatabaseHelper(context);
         try {
-            origin = busList.getStoppageId(src);
-            destination = busList.getStoppageId(dest);
+            origin = DatabaseHelper.getStoppageId(src);
+            destination = DatabaseHelper.getStoppageId(dest);
         } catch (Exception e) {
             Toast.makeText(context, "place not found! " + e, Toast.LENGTH_SHORT).show();
         }
         /*try {
-            origin = busList.getStoppageId(source);
-            destination = busList.getStoppageId(Destination);
+            origin = DatabaseHelper.getStoppageId(source);
+            destination = DatabaseHelper.getStoppageId(Destination);
         } catch (Exception e) {
 
         }
@@ -68,8 +65,8 @@ public class FindVehicle  {
         }
         else
             Toast.makeText(context, "Direct id : "+x, Toast.LENGTH_SHORT).show();
-        stoppageCursor = busList.getStoppage();
-        roadCursor = busList.displayRoadData();
+        stoppageCursor = DatabaseHelper.getStoppage();
+        roadCursor = DatabaseHelper.displayRoadData();
         while (stoppageCursor.moveToNext()) {
             String str = stoppageCursor.getString(1);
             //Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
@@ -153,8 +150,8 @@ public class FindVehicle  {
         return placeIds;
     }
     int directRoad(int origin,int des){
-        Cursor originCursor=busList.findDirectRoad(origin);
-        Cursor desCursor=busList.findDirectRoad(des);
+        Cursor originCursor= DatabaseHelper.findDirectRoad(origin);
+        Cursor desCursor= DatabaseHelper.findDirectRoad(des);
         while(originCursor.moveToNext()){
             while(desCursor.moveToNext()){
                 if(Integer.parseInt(originCursor.getString(0))==Integer.parseInt(desCursor.getString(0))){

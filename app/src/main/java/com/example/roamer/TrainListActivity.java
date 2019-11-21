@@ -6,12 +6,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Vector;
 
 public class TrainListActivity extends AppCompatActivity {
-    busList busList;
+    DatabaseHelper DatabaseHelper;
     int routeFound=0;
     int leangth=150;
     Vector<Integer>[] adjList=new Vector[leangth];
@@ -51,11 +50,11 @@ public class TrainListActivity extends AppCompatActivity {
         ini();
         int origin = -1, destination = -1;
         Cursor roadCursor, stoppageCursor;
-        busList = new busList(this);
+        DatabaseHelper = new DatabaseHelper(this);
 
         try {
-            origin = busList.getStoppageId("Kallyanpur");
-            destination = busList.getStoppageId("GPO");
+            origin = DatabaseHelper.getStoppageId("Kallyanpur");
+            destination = DatabaseHelper.getStoppageId("GPO");
         } catch (Exception e) {
             Toast.makeText(this, "Failed" + e, Toast.LENGTH_SHORT).show();
         }
@@ -65,8 +64,8 @@ public class TrainListActivity extends AppCompatActivity {
         }
         else
             Toast.makeText(this, "Direct id : "+x, Toast.LENGTH_SHORT).show();
-        stoppageCursor = busList.getStoppage();
-        roadCursor = busList.displayRoadData();
+        stoppageCursor = DatabaseHelper.getStoppage();
+        roadCursor = DatabaseHelper.displayRoadData();
         while (stoppageCursor.moveToNext()) {
             String str = stoppageCursor.getString(1);
             //Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
@@ -147,8 +146,8 @@ public class TrainListActivity extends AppCompatActivity {
         }
     }
     int directRoad(int origin,int des){
-        Cursor originCursor=busList.findDirectRoad(origin);
-        Cursor desCursor=busList.findDirectRoad(des);
+        Cursor originCursor= DatabaseHelper.findDirectRoad(origin);
+        Cursor desCursor= DatabaseHelper.findDirectRoad(des);
         while(originCursor.moveToNext()){
             while(desCursor.moveToNext()){
                 if(Integer.parseInt(originCursor.getString(0))==Integer.parseInt(desCursor.getString(0))){

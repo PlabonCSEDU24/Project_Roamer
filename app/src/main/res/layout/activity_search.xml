@@ -1,9 +1,156 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Search">
+    tools:context=".SearchActivity"
+    android:orientation="vertical"
+    android:background="@color/quantum_white_100"
+    >
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarSearchPage"
+        android:theme="@style/Widget.AppCompat.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:clipToPadding="false"
+        android:background="@android:color/white"
+        android:elevation="6dp"
+        android:gravity="center_vertical">
+        <LinearLayout
+            android:layout_marginTop="26dp"
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="40dp"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_art"
+                    android:padding="5dp"
+                    />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginRight="50dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="@color/quantum_grey200">
+                    <AutoCompleteTextView
+                        android:theme="@style/searchBarTheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:id="@+id/search_bar_1"
+                        android:elevation="6dp"
+                        android:hint="source"
+                        android:dropDownAnchor="@id/toolbarSearchPage"
+                        android:completionThreshold="2"
+                        android:textCursorDrawable="@color/colorAccent"
+                        android:textColorHint="@color/quantum_grey700"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:paddingLeft="20dp"
+                        android:background="?selectableItemBackground"
+
+
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="@color/quantum_grey200">
+                    <AutoCompleteTextView
+                        android:theme="@style/searchBarTheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:id="@+id/search_bar_2"
+                        android:textColorHint="@color/quantum_grey700"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:elevation="6dp"
+                        android:completionThreshold="2"
+                        android:hint="destination"
+                        android:dropDownAnchor="@id/toolbarSearchPage"
+                        android:paddingLeft="20dp"
+                        android:textCursorDrawable="@color/colorAccent"
+                        android:background="?selectableItemBackground"
+                        />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        xmlns:sothree="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/sliding_layout1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        sothree:umanoPanelHeight="106dp"
+        sothree:umanoShadowHeight="4dp">
+
+
+        <RelativeLayout
+            android:id="@+id/visibleContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/quantum_white_100">
+            <fragment
+                android:id="@+id/mapFragment"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="550dp" />
+
+            <androidx.cardview.widget.CardView
+
+                android:id="@+id/imgMyLocation"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginBottom="16dp"
+                android:layout_alignBottom="@id/mapFragment"
+                android:layout_alignEnd="@id/mapFragment"
+                android:layout_marginRight="16dp"
+                android:clickable="true"
+                android:focusable="true">
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_my_location"/>
+            </androidx.cardview.widget.CardView>
+
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <ListView
+
+                android:id="@+id/queryResultList"
+                android:layout_width="match_parent"
+                android:layout_height="260dp">
+
+            </ListView>
+        </LinearLayout>
+
+
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+
+
+
+
+</LinearLayout>

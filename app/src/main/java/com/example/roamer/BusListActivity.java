@@ -18,7 +18,7 @@ public class BusListActivity extends AppCompatActivity {
 
     SQLiteDatabase sqLiteDatabase;
     Cursor busCursor,roadCursor;
-    busList busList;
+    DatabaseHelper DatabaseHelper;
     TextView textView;
     RecyclerView recyclerView;
     Adapter adapter;
@@ -30,7 +30,7 @@ public class BusListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bus_list);
         createDatabase();
         textView=(TextView)findViewById(R.id.textItem);
-        busCursor =busList.displayBusData();
+        busCursor = DatabaseHelper.displayBusData();
         recyclerView=(RecyclerView)findViewById(R.id.busListRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter=new Adapter(this, busCursor);
@@ -46,7 +46,7 @@ public class BusListActivity extends AppCompatActivity {
 
     }
     void getStoppageData(int roadId){
-        roadCursor=busList.displayRoadData();
+        roadCursor= DatabaseHelper.displayRoadData();
         stoppageList.clear();
         int firstStoppage=0;
         while(roadCursor.moveToNext()){
@@ -62,7 +62,7 @@ public class BusListActivity extends AppCompatActivity {
         }
     }
     void makeStoppageList(){
-        Cursor cursor=busList.getStoppage();
+        Cursor cursor= DatabaseHelper.getStoppage();
         int n=stoppageList.size();
         ArrayList<String> stoppage=new ArrayList<>();
         stoppageInRoad.clear();
@@ -84,7 +84,7 @@ public class BusListActivity extends AppCompatActivity {
         startActivity(intent);
     }
     public void createDatabase(){
-        busList =new busList(this);
-        sqLiteDatabase=busList.getWritableDatabase();
+        DatabaseHelper =new DatabaseHelper(this);
+        sqLiteDatabase= DatabaseHelper.getWritableDatabase();
     }
 }
